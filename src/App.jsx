@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from 'motion/react'
 
-const CONTACT_EMAIL = 'hello@craftshift.studio'
+const COMPANY_NAME = '(replace)'
+const CONTACT_EMAIL = '(replace)'
 
 const projects = [
   {
@@ -101,9 +102,9 @@ function Header({ menuOpen, setMenuOpen }) {
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-[#11110f]/90 text-white backdrop-blur-md">
       <div className="mx-auto flex h-[72px] max-w-[1440px] items-center justify-between px-5 sm:px-8 lg:px-12">
-        <button onClick={() => scrollTo('#top')} className="flex items-center gap-3" aria-label="Craftshift home">
+        <button onClick={() => scrollTo('#top')} className="flex items-center gap-3" aria-label={`${COMPANY_NAME} home`}>
           <LogoMark />
-          <span className="text-sm font-bold tracking-[0.16em]">CRAFT/SHIFT</span>
+          <span className="text-sm font-bold tracking-[0.16em]">{COMPANY_NAME}</span>
         </button>
 
         <nav className="hidden items-center gap-8 md:flex" aria-label="Main navigation">
@@ -217,6 +218,7 @@ function App() {
   const scaleX = useTransform(scrollYProgress, [0, 1], [0, 1])
 
   const startProject = () => {
+    if (CONTACT_EMAIL === '(replace)') return
     window.location.href = `mailto:${CONTACT_EMAIL}?subject=New%20project%20inquiry`
   }
 
@@ -402,15 +404,15 @@ function App() {
         <div className="mx-auto max-w-[1440px]">
           <div className="flex flex-col gap-8 border-b border-white/15 pb-10 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <div className="mb-5 flex items-center gap-3"><LogoMark /><span className="text-sm font-bold tracking-[0.16em]">CRAFT/SHIFT</span></div>
-              <a href={`mailto:${CONTACT_EMAIL}`} className="footer-email text-2xl font-semibold sm:text-4xl">{CONTACT_EMAIL}</a>
+              <div className="mb-5 flex items-center gap-3"><LogoMark /><span className="text-sm font-bold tracking-[0.16em]">{COMPANY_NAME}</span></div>
+              <span className="footer-email text-2xl font-semibold sm:text-4xl">{CONTACT_EMAIL}</span>
             </div>
             <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="flex items-center gap-3 self-start text-sm font-semibold text-white/65 hover:text-white sm:self-auto">
               Back to top <span className="grid size-10 -rotate-90 place-items-center rounded-full border border-white/20"><ArrowIcon /></span>
             </button>
           </div>
           <div className="flex flex-col gap-3 pt-6 text-xs text-white/40 sm:flex-row sm:items-center sm:justify-between">
-            <p>© {new Date().getFullYear()} Craft/Shift Studio</p>
+            <p>© {new Date().getFullYear()} {COMPANY_NAME}</p>
             <p>Independent team · Working worldwide</p>
           </div>
         </div>

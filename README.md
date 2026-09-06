@@ -1,6 +1,6 @@
-# Craft/Shift
+# (replace)
 
-Responsive company portfolio website for the Craft/Shift freelance team.
+Responsive company portfolio website for the (replace) freelance team.
 
 ## Stack
 
