@@ -102,14 +102,14 @@ function Header({ menuOpen, setMenuOpen }) {
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-[#11110f]/90 text-white backdrop-blur-md">
       <div className="mx-auto flex h-[72px] max-w-[1440px] items-center justify-between px-5 sm:px-8 lg:px-12">
-        <button onClick={() => scrollTo('#top')} className="flex items-center gap-3" aria-label={`${COMPANY_NAME} home`}>
+        <button onClick={() => scrollTo('#top')} className="flex min-h-11 items-center gap-3" aria-label={`${COMPANY_NAME} home`}>
           <LogoMark />
           <span className="text-sm font-bold tracking-[0.16em]">{COMPANY_NAME}</span>
         </button>
 
         <nav className="hidden items-center gap-8 md:flex" aria-label="Main navigation">
           {navItems.map(([label, href]) => (
-            <button key={href} onClick={() => scrollTo(href)} className="nav-link text-sm text-white/70 hover:text-white">
+            <button key={href} onClick={() => scrollTo(href)} className="nav-link flex min-h-11 min-w-11 items-center justify-center px-1 text-sm text-white/70 hover:text-white">
               {label}
             </button>
           ))}
@@ -117,7 +117,7 @@ function Header({ menuOpen, setMenuOpen }) {
 
         <button
           onClick={() => scrollTo('#contact')}
-          className="hidden items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-[#11110f] transition-transform hover:-translate-y-0.5 md:flex"
+          className="hidden min-h-11 items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-[#11110f] transition-transform hover:-translate-y-0.5 md:flex"
         >
           Start a project <ArrowIcon diagonal />
         </button>
@@ -179,7 +179,7 @@ function PortfolioCard({ project, index }) {
       className="project-card group block text-left"
       aria-label={`Open ${project.title}'s portfolio in a new tab`}
     >
-      <div className="relative flex aspect-[4/3] min-h-[360px] flex-col justify-between overflow-hidden p-6 sm:p-8" style={{ backgroundColor: project.color, color: project.textColor }}>
+      <div className="relative flex min-h-[440px] flex-col justify-between overflow-hidden p-6 sm:aspect-[4/3] sm:min-h-0 sm:p-8" style={{ backgroundColor: project.color, color: project.textColor }}>
         <div className="absolute -bottom-[18%] -right-[8%] select-none text-[clamp(13rem,30vw,26rem)] font-black leading-none tracking-[-0.1em] opacity-10" aria-hidden="true">
           {project.initials}
         </div>
@@ -191,12 +191,12 @@ function PortfolioCard({ project, index }) {
             <ArrowIcon diagonal />
           </span>
         </div>
-        <div className="relative max-w-md">
+        <div className="relative w-full min-w-0 max-w-md">
           <p className="mb-4 text-xs font-bold uppercase tracking-[0.18em] opacity-65">Team portfolio / 0{index + 1}</p>
           <p className="text-2xl font-semibold leading-tight sm:text-3xl">{project.summary}</p>
           <div className="mt-6 flex flex-wrap gap-2">
             {project.services.map((service) => (
-              <span key={service} className="rounded-full border border-current/25 px-3 py-1 text-xs font-semibold">{service}</span>
+              <span key={service} className="shrink-0 whitespace-nowrap rounded-full border border-current/25 px-3 py-1 text-xs font-semibold">{service}</span>
             ))}
           </div>
         </div>
@@ -351,8 +351,8 @@ function App() {
                 <span className="mt-1.5 size-2.5 rounded-full bg-[#ff4d24]" />
                 <p className="text-xs font-bold uppercase tracking-[0.2em]">How we work</p>
               </div>
-              <div>
-                <h2 className="max-w-4xl text-[clamp(2.6rem,5.8vw,6rem)] font-black leading-[0.94] tracking-[-0.055em]">
+              <div className="min-w-0">
+                <h2 className="max-w-4xl break-words text-[clamp(1.5rem,8vw,2.5rem)] font-black leading-[0.94] tracking-[-0.055em] sm:text-[clamp(2.6rem,5.8vw,6rem)]">
                   CLOSE COLLABORATION.<br />CLEAR DECISIONS.<br /><span className="font-serif font-normal italic text-[#ff4d24]">No black box.</span>
                 </h2>
                 <p className="mt-10 max-w-2xl text-lg leading-relaxed text-black/60 sm:text-xl">
@@ -407,7 +407,7 @@ function App() {
               <div className="mb-5 flex items-center gap-3"><LogoMark /><span className="text-sm font-bold tracking-[0.16em]">{COMPANY_NAME}</span></div>
               <span className="footer-email text-2xl font-semibold sm:text-4xl">{CONTACT_EMAIL}</span>
             </div>
-            <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="flex items-center gap-3 self-start text-sm font-semibold text-white/65 hover:text-white sm:self-auto">
+            <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="flex min-h-11 items-center gap-3 self-start text-sm font-semibold text-white/65 hover:text-white sm:self-auto">
               Back to top <span className="grid size-10 -rotate-90 place-items-center rounded-full border border-white/20"><ArrowIcon /></span>
             </button>
           </div>
