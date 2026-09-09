@@ -1,6 +1,6 @@
-# (replace)
+# Wren Labs
 
-Responsive company portfolio website for the (replace) freelance team.
+Responsive company portfolio website for Wren Labs, a focused freelance technology team building websites, applications, and intelligent digital products.
 
 ## Stack
 
@@ -26,4 +26,4 @@ The production output is generated in `dist` and can be deployed directly to Ver
 
 ## Customization
 
-Company copy, the contact email, services, and team portfolio links are defined in `src/App.jsx`.
+Company copy, the contact email, services, and team portfolio links are defined in `src/App.jsx`. Brand assets live in `src/assets`.

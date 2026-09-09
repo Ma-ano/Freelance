@@ -2,8 +2,8 @@
 
 :root {
   font-family: Arial, Helvetica, sans-serif;
-  color: #11110f;
-  background: #f2efe8;
+  color: #000000;
+  background: #ffffff;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -35,13 +35,13 @@ button {
 
 button:focus-visible,
 a:focus-visible {
-  outline: 2px solid #ff4d24;
+  outline: 2px solid currentColor;
   outline-offset: 4px;
 }
 
 ::selection {
-  color: #11110f;
-  background: #ff4d24;
+  color: #ffffff;
+  background: #000000;
 }
 
 .nav-link {
@@ -55,7 +55,7 @@ a:focus-visible {
   left: 0;
   height: 1px;
   content: '';
-  background: #ff4d24;
+  background: currentColor;
   transform: scaleX(0);
   transform-origin: right;
   transition: transform 220ms ease;
@@ -71,7 +71,7 @@ a:focus-visible {
 }
 
 .project-card:focus-visible {
-  outline: 3px solid #ff4d24;
+  outline: 3px solid currentColor;
   outline-offset: 6px;
 }
 
@@ -88,7 +88,7 @@ a:focus-visible {
 }
 
 .footer-email:hover {
-  color: #ff4d24;
+  opacity: 0.6;
   background-size: 0 1px;
 }
 
