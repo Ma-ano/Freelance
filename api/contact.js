@@ -1,4 +1,6 @@
 import { getDatabase } from '../server/mongodb.js'
+import { mailConfigured, sendInquiryEmail } from '../server/mailer.js'
+import { deliverInquiry } from '../server/contact-delivery.js'
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -46,19 +48,23 @@ export default async function handler(request, response) {
     if (inquiry.message.length < 12) {
       return response.status(400).json({ error: 'Please describe your project in at least 12 characters.', code: 'INVALID_INPUT' })
     }
-    if (!process.env.MONGODB_URI) {
-      return response.status(503).json({ error: 'Online inquiries are not available yet. Please email wrenlabsph@gmail.com.', code: 'CONTACT_NOT_CONFIGURED' })
-    }
-
-    const database = await getDatabase()
-    const result = await database.collection('inquiries').insertOne({
-      ...inquiry,
-      status: 'new',
-      source: 'wrenlabs-website',
-      createdAt: new Date(),
+    const delivery = await deliverInquiry(inquiry, {
+      emailConfigured: mailConfigured(),
+      send: sendInquiryEmail,
+      save: async (details) => {
+        const database = await getDatabase()
+        const result = await database.collection('inquiries').insertOne({
+          ...details, status: 'new', source: 'wrenlabs-website', createdAt: new Date(),
+        })
+        return result.insertedId.toString()
+      },
     })
 
-    return response.status(201).json({ ok: true, reference: result.insertedId.toString() })
+    console.info('Contact delivery', { saved: delivery.saved, emailed: delivery.emailed, code: delivery.code })
+    if (!delivery.saved && !delivery.emailed) {
+      return response.status(503).json({ ...delivery, ok: false, error: 'Your inquiry could not be delivered. Please email wrenlabsph@gmail.com directly.' })
+    }
+    return response.status(201).json({ ...delivery, ok: true })
   } catch (error) {
     console.error('Contact submission failed', error instanceof Error ? error.name : 'UnknownError')
     return response.status(503).json({ error: 'We could not save your inquiry. Please try again shortly or email wrenlabsph@gmail.com.', code: 'CONTACT_UNAVAILABLE' })

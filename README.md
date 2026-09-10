@@ -38,6 +38,12 @@ Never add real credentials to Git. Add the same variables in Vercel Project Sett
 
 ## Production
 
+### Gmail inquiry notifications
+
+Set `GMAIL_USER` to the Gmail sender (normally `wrenlabsph@gmail.com`) and `GMAIL_APP_PASSWORD` to a Google App Password for that account. Use an App Password, not your normal Google password. Set these in `.env.local` and in Vercel's environment variables, then restart locally or redeploy. See https://support.google.com/accounts/answer/185833 for account eligibility and setup.
+
+Notifications always go to `wrenlabsph@gmail.com`. The visitor email is the Reply-To address. Email and MongoDB storage are attempted independently: email can succeed during a database outage. The form reports partial success accurately; a database save does not imply an email was sent. SMTP acceptance does not guarantee inbox placement, so check spam too. No historical inquiries are emailed automatically.
+
 Wren uses a separate personality prompt in `server/conversation.js` and public company facts in `server/knowledge.js`. Only the last six chat messages (up to 800 characters each) are sent for follow-ups; history stays in browser memory and clears on reload. The UI retains up to 40 messages. Missing facts are not treated as confirmed business information, and sample concepts are explicitly distinguished from delivered client projects.
 
 Public knowledge documents are synchronized to stable `wren:` IDs in MongoDB. Retrieval reads only those public records, never contact inquiries. The same public knowledge powers the non-AI fallback. Changing the approved knowledge file and deploying refreshes those records on the next AI request.

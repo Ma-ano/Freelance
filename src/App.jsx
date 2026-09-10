@@ -405,6 +405,7 @@ function ContactForm() {
   const [form, setForm] = useState({ name: '', email: '', company: '', message: '', website: '' })
   const [status, setStatus] = useState('idle')
   const [errorMessage, setErrorMessage] = useState('')
+  const [deliveryMessage, setDeliveryMessage] = useState('')
 
   const updateField = (event) => {
     const { name, value } = event.target
@@ -424,7 +425,7 @@ function ContactForm() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
-        signal: AbortSignal.timeout(20000),
+        signal: AbortSignal.timeout(35000),
       })
 
       const isJson = result.headers.get('content-type')?.includes('application/json')
@@ -437,6 +438,9 @@ function ContactForm() {
       }
 
       setForm({ name: '', email: '', company: '', message: '', website: '' })
+      setDeliveryMessage(data.emailed
+        ? 'Thanks! Your inquiry was sent to the Wren Labs team.'
+        : 'Your inquiry was saved, but the email notification could not be sent. Please email us directly for a quicker response.')
       setStatus('success')
     } catch (error) {
       setErrorMessage(error.name === 'TimeoutError'
@@ -453,7 +457,7 @@ function ContactForm() {
       <div className="mb-6 flex items-center justify-between gap-4 border-b border-[#EBEBEB] pb-4">
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#1A1A1A]/55">Contact Wren Labs</p>
-          <p className="mt-1 text-sm text-[#1A1A1A]/55">Stored securely for our team to review.</p>
+          <p className="mt-1 text-sm text-[#1A1A1A]/55">Tell us about your next project.</p>
         </div>
         <span className="grid size-11 shrink-0 place-items-center rounded-full bg-[#1A1A1A] text-white"><ArrowIcon diagonal /></span>
       </div>
@@ -486,7 +490,7 @@ function ContactForm() {
 
       <div className="mt-5 flex flex-col gap-4 min-[420px]:flex-row min-[420px]:items-center min-[420px]:justify-between">
         <p className="text-sm leading-relaxed text-[#1A1A1A]/55" aria-live="polite">
-          {status === 'success' && 'Thanks — your inquiry is saved. We’ll reply soon.'}
+          {status === 'success' && <>{deliveryMessage} <a className="underline" href={`mailto:${CONTACT_EMAIL}`}>Email Wren Labs</a></>}
           {status === 'error' && <>{errorMessage} <a className="break-all font-semibold text-[#1A1A1A] underline" href={`mailto:${CONTACT_EMAIL}`}>Email Wren Labs</a></>}
           {(status === 'idle' || status === 'submitting') && <>Or email <a className="font-semibold text-[#1A1A1A] underline" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.</>}
         </p>
