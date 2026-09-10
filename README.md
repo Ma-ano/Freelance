@@ -17,7 +17,7 @@ npm install
 npm run dev
 ```
 
-The Vite development server renders the site and uses the assistant's local knowledge fallback. To run the Vercel API routes locally, link the project and use `vercel dev`.
+The Vite development server runs the same chat and contact handlers as Vercel and loads server credentials from `.env.local`. Restart `npm run dev` after changing credentials. Vercel deployments still require the variables in Vercel Project Settings.
 
 ## Environment variables
 

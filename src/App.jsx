@@ -549,7 +549,11 @@ function WrenAssistant({ open, setOpen, onContact }) {
     sendMessage(input)
   }
 
-  const quickActions = ['Build a website', 'Explore AI and RAG', 'Create an application']
+  const quickActions = [
+    { label: 'Plan my website', question: 'I want to build a website. Briefly explain marketing sites, online stores, and web platforms in plain sentences without a table, then ask one question to get started.' },
+    { label: 'Find an AI use case', question: 'Explain your multi-system support assistant sample concept and how a knowledge-based assistant could help answer customer questions. Keep proposed uses distinct from confirmed features, then ask which workflow I want to improve.' },
+    { label: 'Scope my application', question: 'I have an application idea. Help me plan a first version and ask about the main user problem.' },
+  ]
 
   return (
     <AnimatePresence mode="wait">
@@ -593,12 +597,12 @@ function WrenAssistant({ open, setOpen, onContact }) {
 
             <div className="mt-4 grid gap-2">
               {quickActions.map((action) => (
-                <button key={action} type="button" disabled={isThinking} onClick={() => sendMessage(action)} className="flex min-h-11 items-center justify-between rounded-full border border-[#EBEBEB] px-4 py-2 text-left text-sm font-semibold transition-colors hover:border-[#1A1A1A] disabled:cursor-wait disabled:opacity-50">
-                  {action} <ArrowIcon diagonal />
+                <button key={action.label} type="button" disabled={isThinking} onClick={() => sendMessage(action.question)} className="flex min-h-11 items-center justify-between gap-3 rounded-full border border-[#EBEBEB] px-4 py-2 text-left text-sm font-semibold transition-colors hover:border-[#1A1A1A] disabled:cursor-wait disabled:opacity-50">
+                  {action.label} <ArrowIcon diagonal />
                 </button>
               ))}
               <button type="button" onClick={() => { setOpen(false); onContact() }} className="flex min-h-11 items-center justify-between rounded-full bg-[#1A1A1A] px-4 py-2 text-left text-sm font-semibold text-white">
-                Contact us <ArrowIcon diagonal />
+                Send a project inquiry <ArrowIcon diagonal />
               </button>
             </div>
           </div>
