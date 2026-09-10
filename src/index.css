@@ -62,6 +62,29 @@ a:focus-visible {
   );
 }
 
+.concept-preview {
+  height: 16rem;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid #ebebeb;
+}
+
+.assistant-dot {
+  width: 0.35rem;
+  height: 0.35rem;
+  border-radius: 9999px;
+  background: #1a1a1a;
+  animation: assistant-bounce 900ms ease-in-out infinite alternate;
+}
+
+.assistant-dot:nth-child(2) {
+  animation-delay: 120ms;
+}
+
+.assistant-dot:nth-child(3) {
+  animation-delay: 240ms;
+}
+
 .nav-link {
   position: relative;
 }
@@ -113,6 +136,17 @@ a:focus-visible {
 @keyframes marquee {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
+}
+
+@keyframes assistant-bounce {
+  from { transform: translateY(0); opacity: 0.35; }
+  to { transform: translateY(-0.2rem); opacity: 1; }
+}
+
+@media (min-width: 640px) {
+  .concept-preview {
+    height: 19rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

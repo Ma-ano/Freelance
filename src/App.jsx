@@ -1,10 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from 'motion/react'
 import wrenLabsLogo from './assets/wren-labs-logo.png'
 import wrenMark from './assets/wren-mark.png'
 
 const COMPANY_NAME = 'Wren Labs'
-const CONTACT_EMAIL = 'grootsuarez34@gmail.com'
+const CONTACT_EMAIL = 'wrenlabsph@gmail.com'
 
 const projects = [
   {
@@ -50,11 +50,85 @@ const services = [
   },
   {
     number: '03',
+    title: 'AI & automation',
+    text: 'RAG assistants, chatbots, and agentic workflows grounded in your knowledge and connected to real tools.',
+    tags: ['RAG', 'Chatbots', 'Agents'],
+  },
+  {
+    number: '04',
     title: 'Product design',
     text: 'Research, strategy, and visual systems that give good ideas a sharper point of view.',
     tags: ['UX/UI', 'Strategy', 'Identity'],
   },
 ]
+
+const concepts = [
+  {
+    id: 'commerce',
+    eyebrow: 'Commerce',
+    title: 'E-commerce with automated payment',
+    description: 'A seamless online store with secure checkout, automated payment confirmation, and order tracking.',
+  },
+  {
+    id: 'marketing',
+    eyebrow: 'AI & Automation',
+    title: 'Agentic digital marketing team',
+    description: 'An AI workspace that plans content, creates assets, and coordinates publishing with human approval.',
+  },
+  {
+    id: 'analytics',
+    eyebrow: 'Analytics & Engagement',
+    title: 'Campaign analytics with automated follow-ups',
+    description: 'Track campaign performance and trigger timely email or SMS follow-ups from one connected dashboard.',
+  },
+  {
+    id: 'support',
+    eyebrow: 'Conversational AI',
+    title: 'Multi-system support assistant',
+    description: 'One assistant connected to your tools, helping customers find answers, check orders, and complete everyday tasks.',
+  },
+]
+
+const wrenKnowledge = [
+  {
+    keywords: ['website', 'web', 'landing', 'ecommerce', 'commerce', 'store', 'shop'],
+    answer: 'We build responsive marketing sites, e-commerce experiences, and web platforms in React. We can help shape the strategy, design the interface, and deliver a launch-ready build.',
+  },
+  {
+    keywords: ['application', 'app', 'mobile', 'saas', 'mvp', 'product'],
+    answer: 'We create web and mobile applications from the first user flow through production. That can include product design, a working MVP, integrations, and a clean launch plan.',
+  },
+  {
+    keywords: ['ai', 'rag', 'retrieval', 'automation', 'agent', 'agentic', 'chatbot', 'assistant', 'llm'],
+    answer: 'We build AI assistants, RAG knowledge systems, agentic workflows, and Python services. We design them around reliable source retrieval, clear human controls, and the tools your team already uses.',
+  },
+  {
+    keywords: ['price', 'pricing', 'cost', 'budget', 'quote'],
+    answer: 'Project pricing depends on scope, timeline, and integrations. Send us a short description of what you want to build and we will reply with the best next step and a tailored estimate.',
+  },
+  {
+    keywords: ['time', 'timeline', 'duration', 'weeks', 'launch'],
+    answer: 'A focused website can often move from direction to launch in a few weeks. Larger applications and AI systems are planned in milestones once we understand the core workflow and integrations.',
+  },
+  {
+    keywords: ['contact', 'email', 'talk', 'start', 'project', 'hire'],
+    answer: `Tell us what you are building, who it is for, and your ideal timeline. You can contact Wren Labs directly at ${CONTACT_EMAIL}.`,
+  },
+]
+
+function retrieveWrenAnswer(question) {
+  const normalized = question.toLowerCase()
+  const bestMatch = wrenKnowledge
+    .map((entry) => ({
+      ...entry,
+      score: entry.keywords.reduce((score, keyword) => score + (normalized.includes(keyword) ? 1 : 0), 0),
+    }))
+    .sort((a, b) => b.score - a.score)[0]
+
+  return bestMatch?.score > 0
+    ? bestMatch.answer
+    : `That sounds like something worth exploring. Share the main goal, audience, and any tools it needs to connect with, or email ${CONTACT_EMAIL} and we will help shape the next step.`
+}
 
 function ArrowIcon({ diagonal = false }) {
   return (
@@ -92,6 +166,7 @@ function Reveal({ children, className = '', delay = 0 }) {
 function Header({ menuOpen, setMenuOpen }) {
   const navItems = [
     ['Work', '#work'],
+    ['Concepts', '#concepts'],
     ['Services', '#services'],
     ['About', '#about'],
   ]
@@ -213,13 +288,291 @@ function PortfolioCard({ project, index }) {
   )
 }
 
+function ConceptPreview({ type }) {
+  if (type === 'commerce') {
+    return (
+      <div className="concept-preview bg-white">
+        <div className="flex items-center justify-between border-b border-[#EBEBEB] px-3 py-2 text-[9px] font-bold uppercase tracking-[0.14em] sm:px-4">
+          <span className="font-serif text-sm tracking-[0.2em]">Vela</span>
+          <span className="hidden text-[#1A1A1A]/45 min-[360px]:inline">Shop · Bags · Shoes</span>
+        </div>
+        <div className="grid min-h-48 grid-cols-[.88fr_1.12fr] gap-2 p-2 min-[360px]:grid-cols-[1fr_.82fr] min-[360px]:p-3 sm:gap-4 sm:p-4">
+          <div className="flex flex-col justify-between bg-[#EBEBEB]/65 p-3 sm:p-4">
+            <div>
+              <p className="font-serif text-xl leading-none sm:text-3xl">Modern<br />Essentials</p>
+              <p className="mt-2 text-[9px] text-[#1A1A1A]/55 sm:text-[10px]">Timeless pieces for a brighter day.</p>
+            </div>
+            <span className="w-fit bg-[#1A1A1A] px-3 py-2 text-[9px] font-semibold text-white">Shop collection →</span>
+          </div>
+          <div className="flex flex-col rounded-xl border border-[#EBEBEB] bg-white p-3 shadow-sm sm:p-4">
+            <span className="mb-2 grid size-7 place-items-center rounded-full bg-[#1A1A1A] text-xs text-white">✓</span>
+            <p className="text-xs font-bold sm:text-sm">Payment successful</p>
+            <p className="mt-1 text-[8px] text-[#1A1A1A]/45 sm:text-[9px]">Your order is confirmed.</p>
+            <div className="my-3 space-y-2 text-[8px] sm:text-[9px]">
+              <div className="flex justify-between border-b border-[#EBEBEB] pb-2"><span>Classic sneakers</span><strong>$120</strong></div>
+              <div className="flex justify-between border-b border-[#EBEBEB] pb-2"><span>Everyday tote</span><strong>$280</strong></div>
+            </div>
+            <span className="mt-auto bg-[#1A1A1A] px-2 py-2 text-center text-[8px] font-semibold text-white">View order</span>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (type === 'marketing') {
+    return (
+      <div className="concept-preview grid grid-cols-[54px_1fr] bg-white min-[360px]:grid-cols-[64px_1fr] sm:grid-cols-[84px_1fr]">
+        <div className="border-r border-[#EBEBEB] p-2 sm:p-3">
+          <p className="mb-4 text-[10px] font-black sm:text-xs">◈ Lumen</p>
+          {['Home', 'Content', 'Calendar', 'AI team', 'Analytics'].map((item, index) => (
+            <div key={item} className={`mb-1 rounded px-1.5 py-2 text-[8px] sm:text-[9px] ${index === 1 ? 'bg-[#EBEBEB] font-bold' : 'text-[#1A1A1A]/45'}`}>{item}</div>
+          ))}
+        </div>
+        <div className="min-w-0 p-3 sm:p-4">
+          <div className="flex items-start justify-between gap-2">
+            <div><p className="text-sm font-bold sm:text-base">Content calendar</p><p className="text-[8px] text-[#1A1A1A]/45 sm:text-[9px]">Plan and publish with your AI team.</p></div>
+            <span className="shrink-0 bg-[#1A1A1A] px-2 py-1.5 text-[7px] text-white sm:text-[8px]">+ Campaign</span>
+          </div>
+          <div className="mt-4 grid grid-cols-3 gap-1.5 sm:gap-2">
+            {['Write', 'Design', 'Review'].map((item, index) => (
+              <div key={item} className="rounded border border-[#EBEBEB] p-2">
+                <p className="text-[7px] text-[#1A1A1A]/45">APR {14 + index * 2}</p>
+                <div className="my-2 h-12 bg-[#EBEBEB] sm:h-16" />
+                <p className="text-[7px] font-bold min-[360px]:text-[8px] sm:text-[9px]">{item}</p>
+                <span className="mt-2 block w-fit rounded-full bg-[#EBEBEB] px-1.5 py-1 text-[7px]">Approved</span>
+              </div>
+            ))}
+          </div>
+          <div className="mt-3 flex flex-wrap gap-1.5 text-[7px] text-[#1A1A1A]/60">
+            {['Strategist', 'Copywriter', 'Designer'].map((role) => <span key={role} className="rounded-full border border-[#EBEBEB] px-2 py-1">{role}</span>)}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (type === 'analytics') {
+    return (
+      <div className="concept-preview grid grid-cols-[54px_1fr] bg-white min-[360px]:grid-cols-[64px_1fr] sm:grid-cols-[84px_1fr]">
+        <div className="border-r border-[#EBEBEB] p-2 sm:p-3">
+          <p className="mb-4 text-[10px] font-black sm:text-xs">● Pulse</p>
+          {['Overview', 'Campaigns', 'Audience', 'Automations', 'Reports'].map((item, index) => (
+            <div key={item} className={`mb-1 rounded px-1.5 py-2 text-[8px] sm:text-[9px] ${index === 0 ? 'bg-[#EBEBEB] font-bold' : 'text-[#1A1A1A]/45'}`}>{item}</div>
+          ))}
+        </div>
+        <div className="min-w-0 p-3 sm:p-4">
+          <p className="text-sm font-bold sm:text-base">Campaign performance</p>
+          <div className="mt-3 grid grid-cols-2 gap-1.5 sm:grid-cols-4 sm:gap-2">
+            {[['Sends', '24.3k'], ['Open', '48.2%'], ['Clicks', '12.6%'], ['Convert', '3.4%']].map(([label, value]) => (
+              <div key={label} className="rounded border border-[#EBEBEB] p-2"><p className="text-[7px] text-[#1A1A1A]/45">{label}</p><p className="mt-1 text-xs font-black sm:text-sm">{value}</p></div>
+            ))}
+          </div>
+          <div className="mt-3 grid gap-2 sm:grid-cols-[1.45fr_.75fr]">
+            <div className="rounded border border-[#EBEBEB] p-2">
+              <p className="text-[8px] font-bold">Engagement over time</p>
+              <svg viewBox="0 0 260 82" className="mt-2 h-20 w-full" aria-hidden="true">
+                <path d="M4 70 C28 58 38 66 55 48 S86 58 103 39 S132 53 150 28 S183 43 201 20 S229 32 256 9" fill="none" stroke="#1A1A1A" strokeWidth="2" />
+                <path d="M4 75 C30 67 49 71 67 61 S99 69 118 54 S150 62 172 48 S213 54 256 30" fill="none" stroke="#EBEBEB" strokeWidth="4" />
+              </svg>
+            </div>
+            <div className="space-y-1.5 rounded border border-[#EBEBEB] p-2 text-[7px] sm:text-[8px]">
+              {['Welcome email', 'Wait 2 days', 'Follow-up SMS'].map((step) => <div key={step} className="bg-[#EBEBEB]/70 px-2 py-2">→ {step}</div>)}
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="concept-preview grid grid-cols-[56px_1fr_58px] bg-white min-[360px]:grid-cols-[72px_1fr_78px] sm:grid-cols-[100px_1fr_120px]">
+      <div className="border-r border-[#EBEBEB] p-2 sm:p-3">
+        <p className="mb-3 text-[9px] font-black sm:text-xs">Nova Support</p>
+        {['Emily', 'James', 'Priya', 'Michael'].map((name, index) => (
+          <div key={name} className={`mb-1 rounded px-1.5 py-2 text-[7px] sm:text-[9px] ${index === 0 ? 'bg-[#EBEBEB] font-bold' : 'text-[#1A1A1A]/45'}`}>{name}</div>
+        ))}
+      </div>
+      <div className="min-w-0 p-2 sm:p-3">
+        <div className="border-b border-[#EBEBEB] pb-2 text-[8px] font-bold sm:text-[10px]">Emily Carter · Online</div>
+        <div className="space-y-2 py-3 text-[7px] sm:text-[9px]">
+          <p className="w-fit rounded-lg bg-[#EBEBEB] px-2 py-2">Where is my order?</p>
+          <p className="ml-auto w-fit max-w-[90%] break-words rounded-lg bg-[#1A1A1A] px-2 py-2 text-white">Order #78421 is in transit and arriving Apr 17.</p>
+          <div className="grid grid-cols-4 gap-1 pt-2 text-center text-[6px] text-[#1A1A1A]/55 sm:text-[7px]">
+            {['Confirmed', 'Shipped', 'Transit', 'Arriving'].map((step) => <span key={step} className="border-t border-[#1A1A1A] pt-1">{step}</span>)}
+          </div>
+        </div>
+        <div className="mt-auto rounded-full border border-[#EBEBEB] px-2 py-2 text-[7px] text-[#1A1A1A]/35">Type a message…</div>
+      </div>
+      <div className="border-l border-[#EBEBEB] p-2 sm:p-3">
+        <p className="mb-3 text-[8px] font-bold sm:text-[10px]">Connected</p>
+        {['CRM', 'Orders', 'Knowledge', 'Help desk'].map((item) => <div key={item} className="mb-1.5 rounded border border-[#EBEBEB] px-1.5 py-2 text-[6px] sm:text-[8px]">✓ {item}</div>)}
+      </div>
+    </div>
+  )
+}
+
+function ConceptCard({ concept, index, onAsk }) {
+  return (
+    <motion.article
+      initial={{ opacity: 0, y: 28 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.12 }}
+      transition={{ duration: 0.55, delay: index * 0.06 }}
+      className="min-w-0 border border-[#EBEBEB] bg-white p-2 min-[360px]:p-3 sm:p-4"
+    >
+      <ConceptPreview type={concept.id} />
+      <div className="flex flex-col items-start gap-4 px-1 pb-2 pt-5 min-[420px]:flex-row min-[420px]:items-end min-[420px]:justify-between sm:px-2">
+        <div className="min-w-0">
+          <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-[#1A1A1A]/55">{concept.eyebrow}</p>
+          <h3 className="text-2xl font-black leading-tight tracking-[-0.035em] sm:text-3xl">{concept.title}</h3>
+          <p className="mt-3 max-w-xl text-base leading-relaxed text-[#1A1A1A]/55">{concept.description}</p>
+        </div>
+        <button
+          type="button"
+          onClick={onAsk}
+          className="grid size-12 shrink-0 place-items-center self-end rounded-full border border-[#1A1A1A] transition-all hover:rotate-45 hover:bg-[#1A1A1A] hover:text-white sm:size-14"
+          aria-label={`Ask Wren Assistant about ${concept.title}`}
+        >
+          <ArrowIcon diagonal />
+        </button>
+      </div>
+    </motion.article>
+  )
+}
+
+function WrenAssistant({ open, setOpen, onContact }) {
+  const [input, setInput] = useState('')
+  const [isThinking, setIsThinking] = useState(false)
+  const [messages, setMessages] = useState([
+    {
+      id: 'welcome',
+      role: 'assistant',
+      text: 'Hi! I’m Wren. Ask me about websites, applications, RAG systems, AI automation, or how to start a project.',
+    },
+  ])
+  const messagesEndRef = useRef(null)
+
+  useEffect(() => {
+    if (open) messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+  }, [open, messages, isThinking])
+
+  const sendMessage = (question) => {
+    const cleanQuestion = question.trim()
+    if (!cleanQuestion || isThinking) return
+
+    setMessages((current) => [...current, { id: `user-${Date.now()}`, role: 'user', text: cleanQuestion }])
+    setInput('')
+    setIsThinking(true)
+
+    window.setTimeout(() => {
+      setMessages((current) => [...current, { id: `wren-${Date.now()}`, role: 'assistant', text: retrieveWrenAnswer(cleanQuestion) }])
+      setIsThinking(false)
+    }, 450)
+  }
+
+  const submitMessage = (event) => {
+    event.preventDefault()
+    sendMessage(input)
+  }
+
+  const quickActions = ['Build a website', 'Explore AI and RAG', 'Create an application']
+
+  return (
+    <AnimatePresence mode="wait">
+      {open ? (
+        <motion.aside
+          key="assistant-panel"
+          role="dialog"
+          aria-label="Wren Assistant"
+          initial={{ opacity: 0, y: 24, scale: 0.97 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 18, scale: 0.97 }}
+          transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+          className="fixed inset-x-3 bottom-3 z-[90] flex h-[calc(100dvh-1.5rem)] max-h-[620px] flex-col overflow-hidden rounded-3xl border border-[#EBEBEB] bg-white text-[#1A1A1A] shadow-[0_24px_80px_rgba(0,0,0,0.24)] sm:inset-x-auto sm:bottom-6 sm:right-6 sm:h-[600px] sm:w-[390px]"
+        >
+          <div className="flex items-center justify-between bg-[#1A1A1A] px-4 py-3.5 text-white">
+            <div className="flex min-w-0 items-center gap-3">
+              <img src={wrenMark} alt="" className="size-9 shrink-0 object-contain brightness-0 invert" />
+              <div className="min-w-0">
+                <p className="font-bold">Wren Assistant</p>
+                <p className="text-xs text-white/50">Knowledge-grounded AI studio guide</p>
+              </div>
+            </div>
+            <button type="button" onClick={() => setOpen(false)} className="grid size-11 shrink-0 place-items-center rounded-full text-2xl text-white/70 hover:bg-white/10 hover:text-white" aria-label="Close Wren Assistant">×</button>
+          </div>
+
+          <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4" aria-live="polite">
+            <div className="mb-4">
+              <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#1A1A1A]/45">Talk to Wren</p>
+              <h2 className="mt-1 text-2xl font-black tracking-[-0.04em]">Big ideas start here.</h2>
+            </div>
+
+            <div className="space-y-3">
+              {messages.map((message) => (
+                <div key={message.id} className={`max-w-[88%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${message.role === 'user' ? 'ml-auto bg-[#1A1A1A] text-white' : 'bg-[#EBEBEB]/70'}`}>
+                  {message.text}
+                </div>
+              ))}
+              {isThinking && <div className="flex w-fit items-center gap-1 rounded-2xl bg-[#EBEBEB]/70 px-4 py-4" aria-label="Wren is thinking"><span className="assistant-dot" /><span className="assistant-dot" /><span className="assistant-dot" /></div>}
+              <div ref={messagesEndRef} />
+            </div>
+
+            <div className="mt-4 grid gap-2">
+              {quickActions.map((action) => (
+                <button key={action} type="button" disabled={isThinking} onClick={() => sendMessage(action)} className="flex min-h-11 items-center justify-between rounded-full border border-[#EBEBEB] px-4 py-2 text-left text-sm font-semibold transition-colors hover:border-[#1A1A1A] disabled:cursor-wait disabled:opacity-50">
+                  {action} <ArrowIcon diagonal />
+                </button>
+              ))}
+              <button type="button" onClick={onContact} className="flex min-h-11 items-center justify-between rounded-full bg-[#1A1A1A] px-4 py-2 text-left text-sm font-semibold text-white">
+                Contact us <ArrowIcon diagonal />
+              </button>
+            </div>
+          </div>
+
+          <form onSubmit={submitMessage} className="flex gap-2 border-t border-[#EBEBEB] bg-white p-3">
+            <label htmlFor="wren-message" className="sr-only">Message Wren Assistant</label>
+            <input
+              id="wren-message"
+              value={input}
+              onChange={(event) => setInput(event.target.value)}
+              placeholder="Ask Wren about your idea…"
+              className="min-w-0 flex-1 rounded-full border border-[#EBEBEB] px-4 py-3 text-base outline-none transition-colors focus:border-[#1A1A1A]"
+            />
+            <button type="submit" disabled={!input.trim() || isThinking} className="grid size-12 shrink-0 place-items-center rounded-full bg-[#1A1A1A] text-white disabled:cursor-not-allowed disabled:opacity-35" aria-label="Send message">
+              <ArrowIcon />
+            </button>
+          </form>
+          <p className="pb-3 text-center text-[11px] text-[#1A1A1A]/40">Wren Labs · RAG studio assistant</p>
+        </motion.aside>
+      ) : (
+        <motion.button
+          key="assistant-button"
+          type="button"
+          onClick={() => setOpen(true)}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 12 }}
+          whileHover={{ y: -3 }}
+          whileTap={{ scale: 0.97 }}
+          className="fixed bottom-4 right-4 z-[90] flex size-14 items-center justify-center rounded-full border border-white/20 bg-[#1A1A1A] text-sm font-bold text-white shadow-[0_12px_40px_rgba(0,0,0,0.24)] min-[360px]:min-h-12 min-[360px]:w-auto min-[360px]:gap-3 min-[360px]:px-4 min-[360px]:py-3 sm:bottom-6 sm:right-6"
+          aria-label="Talk to Wren Assistant"
+        >
+          <img src={wrenMark} alt="" className="size-7 object-contain brightness-0 invert" />
+          <span className="hidden min-[360px]:inline">Talk to Wren</span>
+        </motion.button>
+      )}
+    </AnimatePresence>
+  )
+}
+
 function App() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const [assistantOpen, setAssistantOpen] = useState(false)
   const { scrollYProgress } = useScroll()
   const scaleX = useTransform(scrollYProgress, [0, 1], [0, 1])
 
   const startProject = () => {
-    window.location.href = `mailto:${CONTACT_EMAIL}?subject=New%20project%20inquiry`
+    window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent('New project inquiry for Wren Labs')}`
   }
 
   return (
@@ -306,6 +659,22 @@ function App() {
           </div>
         </section>
 
+        <section id="concepts" className="grid-surface scroll-mt-20 border-t border-[#EBEBEB] px-3 py-24 min-[360px]:px-5 sm:px-8 sm:py-32 lg:px-12">
+          <div className="mx-auto max-w-[1440px]">
+            <Reveal className="mb-12 text-center sm:mb-16">
+              <p className="mb-5 text-xs font-bold uppercase tracking-[0.26em] text-[#1A1A1A]/55">Selected work / Sample concepts</p>
+              <h2 className="text-[clamp(2.2rem,10vw,2.7rem)] font-black leading-[0.9] tracking-[-0.065em] min-[360px]:text-[clamp(2.7rem,7vw,6.7rem)]">SMALL TEAM.<br className="sm:hidden" /> REAL SOLUTIONS.</h2>
+              <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-[#1A1A1A]/55 sm:text-xl">A look at what Wren Labs can build for ambitious businesses.</p>
+            </Reveal>
+
+            <div className="grid gap-4 lg:grid-cols-2">
+              {concepts.map((concept, index) => (
+                <ConceptCard key={concept.id} concept={concept} index={index} onAsk={() => setAssistantOpen(true)} />
+              ))}
+            </div>
+          </div>
+        </section>
+
         <section id="services" className="scroll-mt-20 bg-[#1A1A1A] px-5 py-24 text-white sm:px-8 sm:py-32 lg:px-12">
           <div className="mx-auto max-w-[1440px]">
             <Reveal className="mb-14 grid gap-8 md:grid-cols-2 md:items-end">
@@ -318,7 +687,7 @@ function App() {
               </p>
             </Reveal>
 
-            <div className="grid border-t border-[#EBEBEB]/20 lg:grid-cols-3">
+            <div className="grid border-t border-[#EBEBEB]/20 lg:grid-cols-4">
               {services.map((service, index) => (
                 <motion.article
                   key={service.number}
@@ -418,6 +787,8 @@ function App() {
           </div>
         </div>
       </footer>
+
+      <WrenAssistant open={assistantOpen} setOpen={setAssistantOpen} onContact={startProject} />
 
     </div>
   )

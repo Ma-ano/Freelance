@@ -1,6 +1,6 @@
 # Wren Labs
 
-Responsive company portfolio website for Wren Labs, a focused freelance technology team building websites, applications, and intelligent digital products.
+Responsive company portfolio website for Wren Labs, featuring team work, sample product concepts, and a knowledge-grounded Wren Assistant for project discovery.
 
 ## Stack
 
