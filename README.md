@@ -1,6 +1,6 @@
 # Wren Labs
 
-Responsive company portfolio website for Wren Labs, built with React, Tailwind CSS, Motion, MongoDB, and the OpenAI Responses API.
+Responsive company portfolio website for Wren Labs, built with React, Tailwind CSS, Motion, MongoDB, and Groq.
 
 ## Stack
 
@@ -8,7 +8,7 @@ Responsive company portfolio website for Wren Labs, built with React, Tailwind C
 - Tailwind CSS 4
 - Motion
 - MongoDB Atlas
-- OpenAI Responses API
+- Groq using GPT-OSS 20B
 
 ## Development
 
@@ -25,15 +25,16 @@ Copy `.env.example` to `.env.local` and add these server-only values:
 
 - `MONGODB_URI` — MongoDB Atlas connection string
 - `MONGODB_DB` — database name (defaults to `wrenlabs`)
-- `OPENAI_API_KEY` — OpenAI project API key
-- `OPENAI_MODEL` — optional model override (defaults to `gpt-5.6-luna`)
+- `GROQ_API_KEY` — Groq API key
+- `GROQ_MODEL` — optional model override (defaults to `openai/gpt-oss-20b`)
+- `GROQ_BASE_URL` — optional Groq OpenAI-compatible endpoint
 
 Never add real credentials to Git. Add the same variables in Vercel Project Settings for Production, Preview, and Development as needed.
 
 ## Server endpoints
 
 - `POST /api/contact` validates contact-form submissions and stores them in the MongoDB `inquiries` collection.
-- `POST /api/chat` retrieves Wren Labs knowledge from MongoDB and sends that context to the OpenAI Responses API. If the API route is unavailable, the browser assistant uses bundled Wren Labs answers.
+- `POST /api/chat` applies MongoDB-backed visitor and global rate limits, retrieves Wren Labs knowledge from MongoDB, and sends that context to Groq. If the API route is unavailable, the browser assistant uses bundled Wren Labs answers.
 
 ## Production
 
