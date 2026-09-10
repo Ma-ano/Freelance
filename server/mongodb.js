@@ -13,8 +13,14 @@ export async function getDatabase() {
     const client = new MongoClient(uri, {
       maxPoolSize: 5,
       serverSelectionTimeoutMS: 5000,
+      connectTimeoutMS: 5000,
+      socketTimeoutMS: 10000,
     })
-    clientPromise = client.connect()
+    clientPromise = client.connect().catch(async (error) => {
+      clientPromise = undefined
+      await client.close().catch(() => {})
+      throw error
+    })
   }
 
   const client = await clientPromise

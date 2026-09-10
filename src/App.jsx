@@ -404,6 +404,7 @@ function ConceptCard({ concept, index, onAsk }) {
 function ContactForm() {
   const [form, setForm] = useState({ name: '', email: '', company: '', message: '', website: '' })
   const [status, setStatus] = useState('idle')
+  const [errorMessage, setErrorMessage] = useState('')
 
   const updateField = (event) => {
     const { name, value } = event.target
@@ -416,20 +417,31 @@ function ContactForm() {
     if (status === 'submitting') return
 
     setStatus('submitting')
+    setErrorMessage('')
 
     try {
       const result = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
+        signal: AbortSignal.timeout(20000),
       })
 
-      const data = await result.json()
-      if (!result.ok || !data.ok) throw new Error('Contact request failed')
+      const isJson = result.headers.get('content-type')?.includes('application/json')
+      const data = isJson ? await result.json() : null
+      if (!result.ok || !data?.ok) {
+        const knownCodes = ['INVALID_INPUT', 'CONTACT_NOT_CONFIGURED', 'CONTACT_UNAVAILABLE']
+        setErrorMessage(knownCodes.includes(data?.code) ? data.error : 'The contact service could not be reached. Please email us directly.')
+        setStatus('error')
+        return
+      }
 
       setForm({ name: '', email: '', company: '', message: '', website: '' })
       setStatus('success')
-    } catch {
+    } catch (error) {
+      setErrorMessage(error.name === 'TimeoutError'
+        ? 'The request timed out and we could not confirm delivery. Please email us if you need confirmation.'
+        : 'Connection interrupted. Check your internet connection or email us directly.')
       setStatus('error')
     }
   }
@@ -475,7 +487,7 @@ function ContactForm() {
       <div className="mt-5 flex flex-col gap-4 min-[420px]:flex-row min-[420px]:items-center min-[420px]:justify-between">
         <p className="text-sm leading-relaxed text-[#1A1A1A]/55" aria-live="polite">
           {status === 'success' && 'Thanks — your inquiry is saved. We’ll reply soon.'}
-          {status === 'error' && <>Couldn’t send right now. Email <a className="font-semibold text-[#1A1A1A] underline" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.</>}
+          {status === 'error' && <>{errorMessage} <a className="break-all font-semibold text-[#1A1A1A] underline" href={`mailto:${CONTACT_EMAIL}`}>Email Wren Labs</a></>}
           {(status === 'idle' || status === 'submitting') && <>Or email <a className="font-semibold text-[#1A1A1A] underline" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.</>}
         </p>
         <motion.button
