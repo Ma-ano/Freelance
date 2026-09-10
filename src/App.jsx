@@ -440,9 +440,101 @@ function ConceptCard({ concept, index, onAsk }) {
   )
 }
 
+function ContactForm() {
+  const [form, setForm] = useState({ name: '', email: '', company: '', message: '', website: '' })
+  const [status, setStatus] = useState('idle')
+
+  const updateField = (event) => {
+    const { name, value } = event.target
+    setForm((current) => ({ ...current, [name]: value }))
+    if (status !== 'idle') setStatus('idle')
+  }
+
+  const submitInquiry = async (event) => {
+    event.preventDefault()
+    if (status === 'submitting') return
+
+    setStatus('submitting')
+
+    try {
+      const result = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      })
+
+      const data = await result.json()
+      if (!result.ok || !data.ok) throw new Error('Contact request failed')
+
+      setForm({ name: '', email: '', company: '', message: '', website: '' })
+      setStatus('success')
+    } catch {
+      setStatus('error')
+    }
+  }
+
+  const fieldClass = 'w-full rounded-none border border-[#EBEBEB] bg-white px-4 py-3.5 text-base text-[#1A1A1A] outline-none transition-colors placeholder:text-[#1A1A1A]/35 focus:border-[#1A1A1A] disabled:cursor-wait disabled:opacity-55'
+
+  return (
+    <form onSubmit={submitInquiry} className="border border-[#EBEBEB] bg-white p-4 min-[360px]:p-5 sm:p-7" aria-label="Project inquiry form">
+      <div className="mb-6 flex items-center justify-between gap-4 border-b border-[#EBEBEB] pb-4">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#1A1A1A]/55">Contact Wren Labs</p>
+          <p className="mt-1 text-sm text-[#1A1A1A]/55">Stored securely for our team to review.</p>
+        </div>
+        <span className="grid size-11 shrink-0 place-items-center rounded-full bg-[#1A1A1A] text-white"><ArrowIcon diagonal /></span>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <label className="grid gap-2 text-sm font-semibold" htmlFor="contact-name">
+          <span>Name <span aria-hidden="true">*</span></span>
+          <input id="contact-name" name="name" value={form.name} onChange={updateField} autoComplete="name" required minLength="2" maxLength="100" disabled={status === 'submitting'} className={fieldClass} placeholder="Your name" />
+        </label>
+        <label className="grid gap-2 text-sm font-semibold" htmlFor="contact-email">
+          <span>Email <span aria-hidden="true">*</span></span>
+          <input id="contact-email" name="email" type="email" value={form.email} onChange={updateField} autoComplete="email" required maxLength="180" disabled={status === 'submitting'} className={fieldClass} placeholder="you@company.com" />
+        </label>
+      </div>
+
+      <label className="mt-4 grid gap-2 text-sm font-semibold" htmlFor="contact-company">
+        <span>Company <span className="font-normal text-[#1A1A1A]/45">Optional</span></span>
+        <input id="contact-company" name="company" value={form.company} onChange={updateField} autoComplete="organization" maxLength="140" disabled={status === 'submitting'} className={fieldClass} placeholder="Your company or team" />
+      </label>
+
+      <label className="mt-4 grid gap-2 text-sm font-semibold" htmlFor="contact-message">
+        <span>What are you building? <span aria-hidden="true">*</span></span>
+        <textarea id="contact-message" name="message" value={form.message} onChange={updateField} required minLength="12" maxLength="3000" rows="5" disabled={status === 'submitting'} className={`${fieldClass} resize-y`} placeholder="Tell us about the goal, audience, timeline, and any important integrations." />
+      </label>
+
+      <label className="absolute -left-[9999px]" aria-hidden="true">
+        Website
+        <input name="website" value={form.website} onChange={updateField} tabIndex="-1" autoComplete="off" />
+      </label>
+
+      <div className="mt-5 flex flex-col gap-4 min-[420px]:flex-row min-[420px]:items-center min-[420px]:justify-between">
+        <p className="text-sm leading-relaxed text-[#1A1A1A]/55" aria-live="polite">
+          {status === 'success' && 'Thanks — your inquiry is saved. We’ll reply soon.'}
+          {status === 'error' && <>Couldn’t send right now. Email <a className="font-semibold text-[#1A1A1A] underline" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.</>}
+          {(status === 'idle' || status === 'submitting') && <>Or email <a className="font-semibold text-[#1A1A1A] underline" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.</>}
+        </p>
+        <motion.button
+          type="submit"
+          disabled={status === 'submitting'}
+          whileHover={{ y: -2 }}
+          whileTap={{ scale: 0.98 }}
+          className="flex min-h-12 shrink-0 items-center justify-center gap-3 rounded-full bg-[#1A1A1A] px-6 py-3 font-semibold text-white disabled:cursor-wait disabled:opacity-55"
+        >
+          {status === 'submitting' ? 'Sending…' : 'Send inquiry'} <ArrowIcon />
+        </motion.button>
+      </div>
+    </form>
+  )
+}
+
 function WrenAssistant({ open, setOpen, onContact }) {
   const [input, setInput] = useState('')
   const [isThinking, setIsThinking] = useState(false)
+  const [assistantMode, setAssistantMode] = useState('AI + RAG studio guide')
   const [messages, setMessages] = useState([
     {
       id: 'welcome',
@@ -456,7 +548,7 @@ function WrenAssistant({ open, setOpen, onContact }) {
     if (open) messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
   }, [open, messages, isThinking])
 
-  const sendMessage = (question) => {
+  const sendMessage = async (question) => {
     const cleanQuestion = question.trim()
     if (!cleanQuestion || isThinking) return
 
@@ -464,10 +556,26 @@ function WrenAssistant({ open, setOpen, onContact }) {
     setInput('')
     setIsThinking(true)
 
-    window.setTimeout(() => {
+    try {
+      const result = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: cleanQuestion }),
+      })
+
+      if (!result.ok) throw new Error('AI request failed')
+
+      const data = await result.json()
+      if (!data.answer) throw new Error('AI response was empty')
+
+      setMessages((current) => [...current, { id: `wren-${Date.now()}`, role: 'assistant', text: data.answer }])
+      setAssistantMode(data.mode === 'ai-mongodb-rag' ? 'AI + MongoDB RAG' : 'AI + bundled RAG')
+    } catch {
       setMessages((current) => [...current, { id: `wren-${Date.now()}`, role: 'assistant', text: retrieveWrenAnswer(cleanQuestion) }])
+      setAssistantMode('Local knowledge fallback')
+    } finally {
       setIsThinking(false)
-    }, 450)
+    }
   }
 
   const submitMessage = (event) => {
@@ -495,7 +603,7 @@ function WrenAssistant({ open, setOpen, onContact }) {
               <img src={wrenMark} alt="" className="size-9 shrink-0 object-contain brightness-0 invert" />
               <div className="min-w-0">
                 <p className="font-bold">Wren Assistant</p>
-                <p className="text-xs text-white/50">Knowledge-grounded AI studio guide</p>
+                <p className="text-xs text-white/50">{assistantMode}</p>
               </div>
             </div>
             <button type="button" onClick={() => setOpen(false)} className="grid size-11 shrink-0 place-items-center rounded-full text-2xl text-white/70 hover:bg-white/10 hover:text-white" aria-label="Close Wren Assistant">×</button>
@@ -523,7 +631,7 @@ function WrenAssistant({ open, setOpen, onContact }) {
                   {action} <ArrowIcon diagonal />
                 </button>
               ))}
-              <button type="button" onClick={onContact} className="flex min-h-11 items-center justify-between rounded-full bg-[#1A1A1A] px-4 py-2 text-left text-sm font-semibold text-white">
+              <button type="button" onClick={() => { setOpen(false); onContact() }} className="flex min-h-11 items-center justify-between rounded-full bg-[#1A1A1A] px-4 py-2 text-left text-sm font-semibold text-white">
                 Contact us <ArrowIcon diagonal />
               </button>
             </div>
@@ -572,7 +680,8 @@ function App() {
   const scaleX = useTransform(scrollYProgress, [0, 1], [0, 1])
 
   const startProject = () => {
-    window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent('New project inquiry for Wren Labs')}`
+    document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' })
+    window.setTimeout(() => document.querySelector('#contact-name')?.focus({ preventScroll: true }), 650)
   }
 
   return (
@@ -753,18 +862,14 @@ function App() {
               <span className="size-2.5 rounded-full bg-[#1A1A1A]" />
               <p className="text-xs font-bold uppercase tracking-[0.2em]">Have a project in mind?</p>
             </div>
-            <div className="grid gap-10 pt-10 md:grid-cols-[1fr_auto] md:items-end">
-              <h2 className="max-w-5xl text-[clamp(3.5rem,9vw,9rem)] font-black leading-[0.82] tracking-[-0.075em]">
-                LET’S MAKE<br /><span className="font-serif font-normal italic">it real.</span>
-              </h2>
-              <motion.button
-                onClick={startProject}
-                whileHover={{ rotate: -4, scale: 1.04 }}
-                whileTap={{ scale: 0.97 }}
-                className="grid size-36 place-items-center rounded-full bg-[#1A1A1A] p-6 text-center text-sm font-semibold text-white sm:size-44"
-              >
-                <span className="flex flex-col items-center gap-3">Start a project <ArrowIcon diagonal /></span>
-              </motion.button>
+            <div className="grid gap-12 pt-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(360px,0.72fr)] lg:items-start">
+              <div>
+                <h2 className="max-w-5xl text-[clamp(3.2rem,10vw,8.2rem)] font-black leading-[0.82] tracking-[-0.075em]">
+                  LET’S MAKE<br /><span className="font-serif font-normal italic">it real.</span>
+                </h2>
+                <p className="mt-8 max-w-xl text-lg leading-relaxed text-[#1A1A1A]/55 sm:text-xl">Send the essentials and we’ll get back to you at the email you provide. Your message is saved to the Wren Labs project inbox.</p>
+              </div>
+              <ContactForm />
             </div>
           </Reveal>
         </section>
