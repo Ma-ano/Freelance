@@ -117,7 +117,16 @@ a:focus-visible {
 }
 
 .marquee-track {
-  animation: marquee 24s linear infinite;
+  animation: marquee 120s linear infinite;
+}
+
+.marquee-group {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 1.25rem;
+  min-width: 100vw;
+  padding-right: 1.25rem;
 }
 
 .footer-email {

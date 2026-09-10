@@ -9,7 +9,7 @@ export const KNOWLEDGE_DOCUMENTS = [
     slug: 'team-portfolios',
     title: 'Team and portfolio',
     keywords: ['team', 'portfolio', 'portfolios', 'work', 'projects', 'made', 'built', 'peter', 'raynato', 'developers'],
-    content: 'The website features two individual team portfolios: Peter Ma-Año, a full-stack developer focused on software, web, and mobile development (https://ma-ano-portfolio.vercel.app/), and Raynato Pedrajeta, an agentic AI developer focused on Python, LLM applications, and governed multi-agent systems (https://raynatopedrajeta.vercel.app/). These are team portfolios, not a verified list of company client projects. No specific client project names or results have been confirmed.',
+    content: 'Raynato Pedrajeta is the Head Developer at Wren Labs, focused on agentic AI, Python, LLM applications, and governed multi-agent systems (https://raynatopedrajeta.vercel.app/). Peter Gil Ma-año is the Assistant Developer, focused on full-stack software, web, and mobile development (https://ma-ano-portfolio.vercel.app/). These are individual team portfolios, not a verified list of company client projects. No specific client project names or results have been confirmed.',
   },
   {
     slug: 'sample-concepts',

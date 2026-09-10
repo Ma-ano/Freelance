@@ -10,9 +10,9 @@ const CONTACT_EMAIL = 'wrenlabsph@gmail.com'
 const projects = [
   {
     id: 'peter',
-    title: 'PETER MA-AÑO',
+    title: 'PETER GIL MA-AÑO',
     initials: 'PM',
-    eyebrow: 'Full-Stack Developer',
+    eyebrow: 'Assistant Developer',
     category: 'Web & Mobile',
     href: 'https://ma-ano-portfolio.vercel.app/',
     color: '#1A1A1A',
@@ -25,7 +25,7 @@ const projects = [
     id: 'raynato',
     title: 'RAYNATO PEDRAJETA',
     initials: 'RP',
-    eyebrow: 'Agentic AI Developer',
+    eyebrow: 'Head Developer',
     category: 'AI & Python',
     href: 'https://raynatopedrajeta.vercel.app/',
     color: '#ffffff',
@@ -156,7 +156,7 @@ function Header({ menuOpen, setMenuOpen }) {
           onClick={() => scrollTo('#contact')}
           className="hidden min-h-11 items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-[#1A1A1A] transition-transform hover:-translate-y-0.5 md:flex"
         >
-          Start a project <ArrowIcon diagonal />
+          Contact us <ArrowIcon diagonal />
         </button>
 
         <button
@@ -191,7 +191,7 @@ function Header({ menuOpen, setMenuOpen }) {
                 </button>
               ))}
               <button onClick={() => scrollTo('#contact')} className="mt-5 flex items-center justify-between bg-white px-5 py-4 font-semibold text-[#1A1A1A]">
-                Start a project <ArrowIcon diagonal />
+                Contact Us <ArrowIcon diagonal />
               </button>
             </div>
           </motion.nav>
@@ -216,7 +216,7 @@ function PortfolioCard({ project, index }) {
       className="project-card group block text-left"
       aria-label={`Open ${project.title}'s portfolio in a new tab`}
     >
-      <div className={`relative flex min-h-[440px] flex-col justify-between overflow-hidden border p-6 sm:aspect-[4/3] sm:min-h-0 sm:p-8 ${project.dark ? 'border-[#EBEBEB]/20' : 'border-[#EBEBEB]'}`} style={{ backgroundColor: project.color, color: project.textColor }}>
+      <div className={`relative flex flex-col gap-6 overflow-hidden border p-5 sm:p-6 ${project.dark ? 'border-[#EBEBEB]/20' : 'border-[#EBEBEB]'}`} style={{ backgroundColor: project.color, color: project.textColor }}>
         <div className="absolute -bottom-[18%] -right-[8%] select-none text-[clamp(13rem,30vw,26rem)] font-black leading-none tracking-[-0.1em] opacity-10" aria-hidden="true">
           {project.initials}
         </div>
@@ -224,24 +224,24 @@ function PortfolioCard({ project, index }) {
           <span className="rounded-full border border-current/25 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.14em]">
             {project.category}
           </span>
-          <span className={`grid size-12 place-items-center rounded-full border border-current/30 transition-all duration-300 group-hover:rotate-45 sm:size-14 ${project.dark ? 'group-hover:bg-white group-hover:text-[#1A1A1A]' : 'group-hover:bg-[#1A1A1A] group-hover:text-white'}`}>
+          <span className={`grid size-10 shrink-0 place-items-center rounded-full border border-current/30 transition-all duration-300 group-hover:rotate-45 ${project.dark ? 'group-hover:bg-white group-hover:text-[#1A1A1A]' : 'group-hover:bg-[#1A1A1A] group-hover:text-white'}`}>
             <ArrowIcon diagonal />
           </span>
         </div>
         <div className="relative w-full min-w-0 max-w-md">
-          <p className="mb-4 text-xs font-bold uppercase tracking-[0.18em] opacity-65">Team portfolio / 0{index + 1}</p>
-          <p className="text-2xl font-semibold leading-tight sm:text-3xl">{project.summary}</p>
-          <div className="mt-6 flex flex-wrap gap-2">
+          <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] opacity-65">Team portfolio / 0{index + 1}</p>
+          <p className="text-lg font-semibold leading-snug sm:text-xl">{project.summary}</p>
+          <div className="mt-4 flex flex-wrap gap-2">
             {project.services.map((service) => (
-              <span key={service} className="shrink-0 whitespace-nowrap rounded-full border border-current/25 px-3 py-1 text-xs font-semibold">{service}</span>
+              <span key={service} className="max-w-full rounded-full border border-current/25 px-3 py-1 text-xs font-semibold">{service}</span>
             ))}
           </div>
         </div>
       </div>
-      <div className="flex items-end justify-between border-b border-[#EBEBEB] py-5">
-        <div>
+      <div className="flex flex-wrap items-end justify-between gap-3 border-b border-[#EBEBEB] py-3">
+        <div className="min-w-0">
           <p className="mb-1 text-xs font-semibold uppercase tracking-[0.16em] text-[#1A1A1A]/55">{project.eyebrow}</p>
-          <h3 className="text-3xl font-black tracking-[-0.04em] sm:text-4xl lg:text-5xl">{project.title}</h3>
+          <h3 className="text-xl font-black leading-tight tracking-[-0.04em] sm:text-2xl">{project.title}</h3>
         </div>
         <p className="hidden items-center gap-2 pb-1 text-sm font-semibold text-[#1A1A1A]/55 sm:flex">View portfolio <ArrowIcon diagonal /></p>
       </div>
@@ -728,26 +728,31 @@ function App() {
         </section>
 
         <section className="overflow-hidden border-b border-[#EBEBEB] bg-white py-4 text-[#1A1A1A]" aria-label="What we make">
-          <div className="marquee-track flex w-max items-center gap-8 whitespace-nowrap text-sm font-black uppercase tracking-[0.18em]">
-            {[...Array(2)].flatMap((_, repeat) => ['Websites', 'Applications', 'Digital products', 'Brand systems'].map((item) => (
-              <span key={`${repeat}-${item}`} className="flex items-center gap-8">
-                {item}<span className="text-2xl">✳</span>
-              </span>
-            )))}
+          <p className="sr-only">Brand systems, websites, applications, and digital products.</p>
+          <div aria-hidden="true" className="marquee-track flex w-max whitespace-nowrap text-sm font-black uppercase tracking-[0.18em]">
+            {[0, 1].map((copy) => (
+              <div key={copy} className="marquee-group">
+                {Array.from({ length: 8 }, () => ['Brand systems', 'Websites', 'Applications', 'Digital products']).flat().map((item, index) => (
+                  <span key={`${item}-${index}`} className="flex shrink-0 items-center gap-5">
+                    {item}<span className="text-2xl">✳</span>
+                  </span>
+                ))}
+              </div>
+            ))}
           </div>
         </section>
 
-        <section id="work" className="grid-surface scroll-mt-20 px-5 py-24 sm:px-8 sm:py-32 lg:px-12">
+        <section id="work" className="grid-surface scroll-mt-20 px-5 py-12 sm:px-8 sm:py-16 lg:px-12">
           <div className="mx-auto max-w-[1440px]">
             <Reveal className="mb-12 flex flex-col gap-8 border-b border-[#EBEBEB] pb-8 md:flex-row md:items-end md:justify-between">
               <div>
                 <p className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-[#1A1A1A]/55">Meet the builders</p>
-                <h2 className="text-[clamp(3rem,7vw,6.8rem)] font-black leading-[0.88] tracking-[-0.065em]">TWO MINDS.<br /><span className="font-serif font-normal italic">One team.</span></h2>
+                <h2 className="text-[clamp(3rem,7vw,6.8rem)] font-black leading-[0.88] tracking-[-0.065em]">Our Talents.</h2>
               </div>
               <p className="max-w-md text-lg leading-relaxed text-[#1A1A1A]/55">Explore the individual work, experience, and technical depth behind our studio.</p>
             </Reveal>
 
-            <div className="grid gap-x-6 gap-y-14 lg:grid-cols-2">
+            <div className="grid gap-x-6 gap-y-7 md:grid-cols-2">
               {projects.map((project, index) => (
                 <PortfolioCard key={project.id} project={project} index={index} />
               ))}
