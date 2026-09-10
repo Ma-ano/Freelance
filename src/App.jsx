@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from 'motion/react'
 import wrenLabsLogo from './assets/wren-labs-logo.png'
 import wrenMark from './assets/wren-mark.png'
+import { localAnswer } from '../server/knowledge.js'
 
 const COMPANY_NAME = 'Wren Labs'
 const CONTACT_EMAIL = 'wrenlabsph@gmail.com'
@@ -89,46 +90,6 @@ const concepts = [
   },
 ]
 
-const wrenKnowledge = [
-  {
-    keywords: ['website', 'web', 'landing', 'ecommerce', 'commerce', 'store', 'shop'],
-    answer: 'We build responsive marketing sites, e-commerce experiences, and web platforms in React. We can help shape the strategy, design the interface, and deliver a launch-ready build.',
-  },
-  {
-    keywords: ['application', 'app', 'mobile', 'saas', 'mvp', 'product'],
-    answer: 'We create web and mobile applications from the first user flow through production. That can include product design, a working MVP, integrations, and a clean launch plan.',
-  },
-  {
-    keywords: ['ai', 'rag', 'retrieval', 'automation', 'agent', 'agentic', 'chatbot', 'assistant', 'llm'],
-    answer: 'We build AI assistants, RAG knowledge systems, agentic workflows, and Python services. We design them around reliable source retrieval, clear human controls, and the tools your team already uses.',
-  },
-  {
-    keywords: ['price', 'pricing', 'cost', 'budget', 'quote'],
-    answer: 'Project pricing depends on scope, timeline, and integrations. Send us a short description of what you want to build and we will reply with the best next step and a tailored estimate.',
-  },
-  {
-    keywords: ['time', 'timeline', 'duration', 'weeks', 'launch'],
-    answer: 'A focused website can often move from direction to launch in a few weeks. Larger applications and AI systems are planned in milestones once we understand the core workflow and integrations.',
-  },
-  {
-    keywords: ['contact', 'email', 'talk', 'start', 'project', 'hire'],
-    answer: `Tell us what you are building, who it is for, and your ideal timeline. You can contact Wren Labs directly at ${CONTACT_EMAIL}.`,
-  },
-]
-
-function retrieveWrenAnswer(question) {
-  const normalized = question.toLowerCase()
-  const bestMatch = wrenKnowledge
-    .map((entry) => ({
-      ...entry,
-      score: entry.keywords.reduce((score, keyword) => score + (normalized.includes(keyword) ? 1 : 0), 0),
-    }))
-    .sort((a, b) => b.score - a.score)[0]
-
-  return bestMatch?.score > 0
-    ? bestMatch.answer
-    : `That sounds like something worth exploring. Share the main goal, audience, and any tools it needs to connect with, or email ${CONTACT_EMAIL} and we will help shape the next step.`
-}
 
 function ArrowIcon({ diagonal = false }) {
   return (
@@ -534,7 +495,8 @@ function ContactForm() {
 function WrenAssistant({ open, setOpen, onContact }) {
   const [input, setInput] = useState('')
   const [isThinking, setIsThinking] = useState(false)
-  const [assistantMode, setAssistantMode] = useState('AI + RAG studio guide')
+  const [assistantMode, setAssistantMode] = useState('Your Wren Labs guide')
+  const requestPending = useRef(false)
   const [messages, setMessages] = useState([
     {
       id: 'welcome',
@@ -550,7 +512,9 @@ function WrenAssistant({ open, setOpen, onContact }) {
 
   const sendMessage = async (question) => {
     const cleanQuestion = question.trim()
-    if (!cleanQuestion || isThinking) return
+    if (!cleanQuestion || requestPending.current) return
+    requestPending.current = true
+    const history = messages.filter((item) => item.id !== 'welcome' && !item.fallback).slice(-6).map(({ role, text }) => ({ role, content: text }))
 
     setMessages((current) => [...current, { id: `user-${Date.now()}`, role: 'user', text: cleanQuestion }])
     setInput('')
@@ -560,7 +524,8 @@ function WrenAssistant({ open, setOpen, onContact }) {
       const result = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: cleanQuestion }),
+        body: JSON.stringify({ message: cleanQuestion, history }),
+        signal: AbortSignal.timeout(25000),
       })
 
       if (!result.ok) throw new Error('AI request failed')
@@ -568,13 +533,14 @@ function WrenAssistant({ open, setOpen, onContact }) {
       const data = await result.json()
       if (!data.answer) throw new Error('AI response was empty')
 
-      setMessages((current) => [...current, { id: `wren-${Date.now()}`, role: 'assistant', text: data.answer }])
-      setAssistantMode(data.mode === 'ai-mongodb-rag' ? 'AI + MongoDB RAG' : 'AI + bundled RAG')
+      setMessages((current) => [...current.slice(-39), { id: `wren-${Date.now()}`, role: 'assistant', text: data.answer }])
+      setAssistantMode('Your AI guide to Wren Labs')
     } catch {
-      setMessages((current) => [...current, { id: `wren-${Date.now()}`, role: 'assistant', text: retrieveWrenAnswer(cleanQuestion) }])
-      setAssistantMode('Local knowledge fallback')
+      setMessages((current) => [...current.slice(-39), { id: `wren-${Date.now()}`, role: 'assistant', text: localAnswer(cleanQuestion, history), fallback: true }])
+      setAssistantMode('AI unavailable · Showing website information')
     } finally {
       setIsThinking(false)
+      requestPending.current = false
     }
   }
 
@@ -617,7 +583,7 @@ function WrenAssistant({ open, setOpen, onContact }) {
 
             <div className="space-y-3">
               {messages.map((message) => (
-                <div key={message.id} className={`max-w-[88%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${message.role === 'user' ? 'ml-auto bg-[#1A1A1A] text-white' : 'bg-[#EBEBEB]/70'}`}>
+                <div key={message.id} className={`max-w-[88%] whitespace-pre-wrap break-words rounded-2xl px-4 py-3 text-sm leading-relaxed ${message.role === 'user' ? 'ml-auto bg-[#1A1A1A] text-white' : 'bg-[#EBEBEB]/70'}`}>
                   {message.text}
                 </div>
               ))}
@@ -641,6 +607,7 @@ function WrenAssistant({ open, setOpen, onContact }) {
             <label htmlFor="wren-message" className="sr-only">Message Wren Assistant</label>
             <input
               id="wren-message"
+              maxLength={1000}
               value={input}
               onChange={(event) => setInput(event.target.value)}
               placeholder="Ask Wren about your idea…"
@@ -650,7 +617,7 @@ function WrenAssistant({ open, setOpen, onContact }) {
               <ArrowIcon />
             </button>
           </form>
-          <p className="pb-3 text-center text-[11px] text-[#1A1A1A]/40">Wren Labs · RAG studio assistant</p>
+          <p className="px-4 pb-3 text-center text-[11px] text-[#1A1A1A]/60">AI can make mistakes. Please keep sensitive details out of chat.</p>
         </motion.aside>
       ) : (
         <motion.button
