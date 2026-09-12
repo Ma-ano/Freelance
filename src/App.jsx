@@ -12,7 +12,7 @@ const projects = [
     id: 'peter',
     title: 'PETER GIL MA-AÑO',
     initials: 'PM',
-    eyebrow: 'Assistant Developer',
+    eyebrow: 'Assistant Head Developer',
     category: 'Web & Mobile',
     href: 'https://ma-ano-portfolio.vercel.app/',
     color: '#1A1A1A',
