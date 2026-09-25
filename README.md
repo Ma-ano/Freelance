@@ -53,3 +53,18 @@ npm run build
 ```
 
 The production output is generated in `dist` and is ready for Vercel.
+
+## Team portfolios on one domain
+
+These profile routes are prepared for the portfolio migration:
+
+- Peter: `/PORTFOLIO/maanopetergil`
+- Raynato: `/PORTFOLIO/raynatopedrajeta`
+
+On the current production domain, prefix each path with `https://freelance-dusky-seven.vercel.app`. Links within the site are relative, so both profiles also work under a future custom domain without changing the paths. `vercel.json` rewrites portfolio requests to the React entry page, allowing direct visits and refreshes while leaving `/api/*` and assets untouched. See [Vercel rewrites](https://vercel.com/docs/routing/rewrites).
+
+For now, each profile clearly says its full portfolio is coming and links to the existing external portfolio. The old sites have not been transferred or proxied. Team names, roles, profile paths, and current portfolio links live in `src/data/team.js`, shared by the website and assistant knowledge. To complete the transfer later, bring in each portfolio's source and assets and replace its temporary content in `src/PortfolioPage.jsx`, preserving the public paths. Check asset paths and any API routes before retiring the old deployments.
+
+## Assistant knowledge
+
+`server/knowledge.js` covers the studio, name and logo, wren bird, developers, sample concepts, services, project agenda, initial brief, contact, and the limits of published pricing/support terms. Bird facts are sourced from the [Cornell Lab's Northern House Wren guide](https://www.allaboutbirds.org/guide/House_Wren/overview); they are kept separate from the company's brand symbolism and do not claim a specific species for the logo.

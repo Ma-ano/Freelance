@@ -3,63 +3,35 @@ import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } fr
 import wrenLabsLogo from './assets/wren-labs-logo.png'
 import wrenMark from './assets/wren-mark.png'
 import { localAnswer } from '../server/knowledge.js'
+import { teamMembers } from './data/team.js'
 
 const COMPANY_NAME = 'Wren Labs'
 const CONTACT_EMAIL = 'wrenlabsph@gmail.com'
-
-const projects = [
-  {
-    id: 'peter',
-    title: 'PETER GIL MA-AÑO',
-    initials: 'PM',
-    eyebrow: 'Assistant Head Developer',
-    category: 'Web & Mobile',
-    href: 'https://ma-ano-portfolio.vercel.app/',
-    color: '#1A1A1A',
-    textColor: '#ffffff',
-    dark: true,
-    summary: 'Full-stack, software, web, and mobile development focused on production applications for real businesses.',
-    services: ['Full-stack engineering', 'Web applications', 'Mobile development'],
-  },
-  {
-    id: 'raynato',
-    title: 'RAYNATO PEDRAJETA',
-    initials: 'RP',
-    eyebrow: 'Head Developer',
-    category: 'AI & Python',
-    href: 'https://raynatopedrajeta.vercel.app/',
-    color: '#ffffff',
-    textColor: '#1A1A1A',
-    dark: false,
-    summary: 'Agentic AI, Python services, and governed multi-agent systems built for real enterprise workflows.',
-    services: ['Agentic systems', 'LLM applications', 'Python engineering'],
-  },
-]
 
 const services = [
   {
     number: '01',
     title: 'Websites',
-    text: 'Distinctive marketing sites and web platforms built to be fast, clear, and easy to grow.',
-    tags: ['React', 'E-commerce', 'CMS'],
+    text: 'Business websites, portfolios, landing pages, and online stores that make your offer clear. We bring together responsive layouts, content, and the integrations your site needs.',
+    tags: ['Business sites', 'E-commerce', 'Portfolios'],
   },
   {
     number: '02',
     title: 'Applications',
-    text: 'Useful, intuitive products for mobile and web—from the first user flow to a launch-ready build.',
-    tags: ['Mobile', 'SaaS', 'MVPs'],
+    text: 'Web and mobile apps that turn an idea into something people can use. We plan the key features, design the screens, and build the databases and connections behind them.',
+    tags: ['Mobile & web', 'Dashboards', 'MVPs'],
   },
   {
     number: '03',
     title: 'AI & automation',
-    text: 'RAG assistants, chatbots, and agentic workflows grounded in your knowledge and connected to real tools.',
+    text: 'Assistants that answer from your approved documents, plus workflows that help with repetitive tasks. We connect your tools and plan where human review is needed.',
     tags: ['RAG', 'Chatbots', 'Agents'],
   },
   {
     number: '04',
     title: 'Product design',
-    text: 'Research, strategy, and visual systems that give good ideas a sharper point of view.',
-    tags: ['UX/UI', 'Strategy', 'Identity'],
+    text: 'Clear user journeys, wireframes, and interactive prototypes before development. We shape the interface and visual direction so each screen feels part of the same product.',
+    tags: ['UX/UI', 'Prototypes', 'Visual identity'],
   },
 ]
 
@@ -207,14 +179,12 @@ function PortfolioCard({ project, index }) {
   return (
     <motion.a
       href={project.href}
-      target="_blank"
-      rel="noreferrer"
       initial={reduceMotion ? false : { opacity: 0, y: 24 }}
       whileInView={reduceMotion ? {} : { opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.18 }}
       transition={{ duration: 0.55, delay: index * 0.08 }}
       className="project-card group block text-left"
-      aria-label={`Open ${project.title}'s portfolio in a new tab`}
+      aria-label={`Explore ${project.name}'s portfolio`}
     >
       <div className={`relative flex flex-col gap-6 overflow-hidden border p-5 sm:p-6 ${project.dark ? 'border-[#EBEBEB]/20' : 'border-[#EBEBEB]'}`} style={{ backgroundColor: project.color, color: project.textColor }}>
         <div className="absolute -bottom-[18%] -right-[8%] select-none text-[clamp(13rem,30vw,26rem)] font-black leading-none tracking-[-0.1em] opacity-10" aria-hidden="true">
@@ -666,6 +636,13 @@ function App() {
   const { scrollYProgress } = useScroll()
   const scaleX = useTransform(scrollYProgress, [0, 1], [0, 1])
 
+  useEffect(() => {
+    const section = document.getElementById(window.location.hash.slice(1))
+    if (!section) return
+    const frame = window.requestAnimationFrame(() => section.scrollIntoView({ behavior: 'instant' }))
+    return () => window.cancelAnimationFrame(frame)
+  }, [])
+
   const startProject = () => {
     document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' })
     window.setTimeout(() => document.querySelector('#contact-name')?.focus({ preventScroll: true }), 650)
@@ -677,18 +654,11 @@ function App() {
       <Header menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
 
       <main>
-        <section className="relative min-h-[760px] overflow-hidden bg-[#1A1A1A] px-5 pb-10 pt-32 text-white sm:px-8 sm:pt-40 lg:px-12">
+        <section className="relative min-h-[620px] overflow-hidden bg-[#1A1A1A] px-5 pb-10 pt-32 text-white sm:min-h-[760px] sm:px-8 sm:pt-40 lg:px-12">
           <img src={wrenMark} alt="" className="pointer-events-none absolute -right-20 top-24 w-[clamp(22rem,52vw,52rem)] select-none brightness-0 invert opacity-[0.06]" aria-hidden="true" />
-          <div className="mx-auto flex min-h-[620px] max-w-[1440px] flex-col justify-between">
+          <div className="mx-auto flex min-h-[450px] max-w-[1440px] flex-col justify-between sm:min-h-[620px]">
             <div className="flex flex-col gap-6 border-l border-[#EBEBEB]/20 pl-4 sm:flex-row sm:items-center sm:justify-between sm:pl-6">
               <p className="max-w-[280px] text-sm leading-relaxed text-white/60">Wren Labs is an independent technology studio working across borders.</p>
-              <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.14em] text-white/75">
-                <span className="relative flex size-2.5">
-                  <span className="absolute inline-flex size-full animate-ping rounded-full bg-white opacity-50" />
-                  <span className="relative inline-flex size-2.5 rounded-full bg-white" />
-                </span>
-                Available for select projects
-              </div>
             </div>
 
             <div className="py-14 sm:py-20">
@@ -700,7 +670,7 @@ function App() {
               >
                 Websites · Applications · AI
               </motion.p>
-              <h1 className="max-w-[1320px] overflow-hidden text-[clamp(3.4rem,9.4vw,9rem)] font-black leading-[0.82] tracking-[-0.075em]">
+              <h1 className="max-w-[1320px] overflow-hidden text-[clamp(1.5rem,9.4vw,9rem)] font-black leading-[0.82] tracking-[-0.075em]">
                 <motion.span initial={{ y: '100%' }} animate={{ y: 0 }} transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }} className="block">
                   SMALL TEAM.
                 </motion.span>
@@ -753,7 +723,7 @@ function App() {
             </Reveal>
 
             <div className="grid gap-x-6 gap-y-7 md:grid-cols-2">
-              {projects.map((project, index) => (
+              {teamMembers.map((project, index) => (
                 <PortfolioCard key={project.id} project={project} index={index} />
               ))}
             </div>
@@ -763,9 +733,9 @@ function App() {
         <section id="concepts" className="grid-surface scroll-mt-20 border-t border-[#EBEBEB] px-3 py-24 min-[360px]:px-5 sm:px-8 sm:py-32 lg:px-12">
           <div className="mx-auto max-w-[1440px]">
             <Reveal className="mb-12 text-center sm:mb-16">
-              <p className="mb-5 text-xs font-bold uppercase tracking-[0.26em] text-[#1A1A1A]/55">Selected work / Sample concepts</p>
+              <p className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-[#1A1A1A]/55">Explore the possibilities</p>
               <h2 className="text-[clamp(2.2rem,10vw,2.7rem)] font-black leading-[0.9] tracking-[-0.065em] min-[360px]:text-[clamp(2.7rem,7vw,6.7rem)]">SMALL TEAM.<br className="sm:hidden" /> REAL SOLUTIONS.</h2>
-              <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-[#1A1A1A]/55 sm:text-xl">A look at what Wren Labs can build for ambitious businesses.</p>
+              <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-[#1A1A1A]/55 sm:text-xl">Sample concepts showing what we can build for your business, from online stores to connected AI tools.</p>
             </Reveal>
 
             <div className="grid gap-4 lg:grid-cols-2">
@@ -780,15 +750,15 @@ function App() {
           <div className="mx-auto max-w-[1440px]">
             <Reveal className="mb-14 grid gap-8 md:grid-cols-2 md:items-end">
               <div>
-                <p className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-white/55">What we do</p>
-                <h2 className="text-[clamp(3.1rem,7vw,7rem)] font-black leading-[0.85] tracking-[-0.065em]">BIG-TEAM<br /><span className="font-serif font-normal italic">thinking.</span></h2>
+                <p className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-white/55">What we provide</p>
+                <h2 className="text-[clamp(2.8rem,7vw,7rem)] font-black leading-[0.9] tracking-[-0.065em]">WHAT WE<br /><span className="font-serif font-normal italic">can build.</span></h2>
               </div>
               <p className="max-w-lg text-lg leading-relaxed text-white/60 md:justify-self-end md:text-xl">
-                A small senior team for the whole journey. Fewer handoffs, faster decisions, and craft that stays consistent from idea to launch.
+                We’re a small team that works directly with you to build websites, applications, and AI tools. From planning and design to development and launch, here’s how we can help bring your idea to life.
               </p>
             </Reveal>
 
-            <div className="grid border-t border-[#EBEBEB]/20 lg:grid-cols-4">
+            <div className="grid border-t border-[#EBEBEB]/20 md:grid-cols-2 xl:grid-cols-4">
               {services.map((service, index) => (
                 <motion.article
                   key={service.number}
@@ -796,7 +766,7 @@ function App() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, amount: 0.2 }}
                   transition={{ duration: 0.55, delay: index * 0.08 }}
-                  className="group border-b border-[#EBEBEB]/20 px-0 py-9 lg:border-r lg:px-8 lg:py-12 lg:first:pl-0 lg:last:border-r-0 lg:last:pr-0"
+                  className="group min-w-0 border-b border-[#EBEBEB]/20 px-0 py-9 md:border-r md:px-6 md:even:border-r-0 xl:px-8 xl:py-12 xl:even:border-r xl:first:pl-0 xl:last:border-r-0 xl:last:pr-0"
                 >
                   <div className="mb-16 flex items-center justify-between lg:mb-24">
                     <span className="text-sm font-semibold text-white/55">{service.number}</span>
@@ -804,7 +774,7 @@ function App() {
                       <ArrowIcon diagonal />
                     </span>
                   </div>
-                  <h3 className="mb-5 text-4xl font-black tracking-[-0.04em]">{service.title}</h3>
+                  <h3 className="mb-5 text-3xl font-black tracking-[-0.04em] 2xl:text-4xl">{service.title}</h3>
                   <p className="mb-8 max-w-sm leading-relaxed text-white/55">{service.text}</p>
                   <div className="flex flex-wrap gap-2">
                     {service.tags.map((tag) => <span key={tag} className="rounded-full border border-[#EBEBEB]/20 px-3 py-1 text-xs text-white/65">{tag}</span>)}
@@ -827,20 +797,25 @@ function App() {
                   SMALL BIRD.<br />FOCUSED TEAM.<br /><span className="font-serif font-normal italic">Significant impact.</span>
                 </h2>
                 <p className="mt-10 max-w-2xl text-lg leading-relaxed text-[#1A1A1A]/60 sm:text-xl">
-                  The wren is a small bird known for intelligence, energy, adaptability, and surprising power. It reflects how we work: a focused technology team building websites, applications, and systems with impact beyond our size.
+                  Our name comes from the wren, a small bird with a lively presence and a surprisingly strong voice. To us, it represents curiosity, energy, and adaptability. That’s the spirit behind Wren Labs: a small team listening closely, solving useful problems, and making every detail count.
                 </p>
               </div>
             </Reveal>
 
-            <div className="mt-20 grid border-y border-[#EBEBEB] sm:grid-cols-3">
+            <Reveal className="mt-16 border-t border-[#EBEBEB] pt-10 sm:mt-20">
+              <p className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-[#1A1A1A]/55">The project agenda</p>
+              <h3 className="max-w-3xl text-3xl font-black leading-tight tracking-[-0.04em] sm:text-5xl">From first conversation to launch.</h3>
+              <p className="mt-4 max-w-2xl text-lg leading-relaxed text-[#1A1A1A]/60">A clear plan, regular feedback, and a shared understanding of what we’re building at every stage.</p>
+            </Reveal>
+            <div className="mt-8 grid border-y border-[#EBEBEB] sm:grid-cols-3">
               {[
-                ['01', 'Find the signal', 'We clarify the audience, the problem, and what a successful first release needs to do.'],
-                ['02', 'Make it tangible', 'We prototype the important flows early so the product can be discussed, tested, and improved.'],
-                ['03', 'Ship it well', 'We build the final experience, sweat the details, and prepare a clean handoff or launch.'],
+                ['01', 'Plan together', 'We talk through your goals, audience, must-have features, budget, and target date. Together, we agree on the scope and priorities for the first release.'],
+                ['02', 'Design & build', 'We map the main user flows, share designs or prototypes, and develop the agreed features. Your feedback helps shape the product as it takes form.'],
+                ['03', 'Test & launch', 'We check the key journeys across screen sizes, refine the details, and prepare deployment and handoff. We also discuss any support you may need after launch.'],
               ].map(([number, title, text], index) => (
                 <Reveal key={number} delay={index * 0.08} className="border-b border-[#EBEBEB] py-8 sm:border-b-0 sm:border-r sm:px-6 sm:py-10 sm:first:pl-0 sm:last:border-r-0 sm:last:pr-0">
-                  <p className="mb-14 text-sm font-bold text-[#1A1A1A]/55">{number}</p>
-                  <h3 className="mb-4 text-2xl font-black tracking-[-0.03em]">{title}</h3>
+                  <p className="mb-8 text-sm font-bold text-[#1A1A1A]/55">{number}</p>
+                  <h4 className="mb-4 text-2xl font-black tracking-[-0.03em]">{title}</h4>
                   <p className="max-w-sm leading-relaxed text-[#1A1A1A]/55">{text}</p>
                 </Reveal>
               ))}
@@ -855,11 +830,11 @@ function App() {
               <p className="text-xs font-bold uppercase tracking-[0.2em]">Have a project in mind?</p>
             </div>
             <div className="grid gap-12 pt-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(360px,0.72fr)] lg:items-start">
-              <div>
-                <h2 className="max-w-5xl text-[clamp(3.2rem,10vw,8.2rem)] font-black leading-[0.82] tracking-[-0.075em]">
-                  LET’S MAKE<br /><span className="font-serif font-normal italic">it real.</span>
+              <div className="min-w-0">
+                <h2 className="text-[clamp(2rem,5.1vw,5.2rem)] font-black leading-[1.05] tracking-[-0.06em]">
+                  <a href={`mailto:${CONTACT_EMAIL}`} className="transition-opacity [overflow-wrap:anywhere] hover:opacity-60">wrenlabsph@<wbr />gmail.com</a>
                 </h2>
-                <p className="mt-8 max-w-xl text-lg leading-relaxed text-[#1A1A1A]/55 sm:text-xl">Send the essentials and we’ll get back to you at the email you provide. Your message is saved to the Wren Labs project inbox.</p>
+                <p className="mt-6 max-w-xl text-lg leading-relaxed text-[#1A1A1A]/60 sm:text-xl">Tell us what you want to build, who it’s for, and when you’d like to launch. Email us directly or use the form, and we’ll reply to the address you share.</p>
               </div>
               <ContactForm />
             </div>
