@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from 'motion/react'
 import wrenLabsLogo from './assets/wren-labs-logo.png'
 import wrenMark from './assets/wren-mark.png'
-import { localAnswer } from '../server/knowledge.js'
 import { teamMembers } from './data/team.js'
+import WrenAssistant from './WrenAssistant.jsx'
+import { mergeInquiryDraft } from './chat-utils.js'
 
 const COMPANY_NAME = 'Wren Labs'
 const CONTACT_EMAIL = 'wrenlabsph@gmail.com'
@@ -371,8 +372,7 @@ function ConceptCard({ concept, index, onAsk }) {
   )
 }
 
-function ContactForm() {
-  const [form, setForm] = useState({ name: '', email: '', company: '', message: '', website: '' })
+function ContactForm({ form, setForm, draftNotice }) {
   const [status, setStatus] = useState('idle')
   const [errorMessage, setErrorMessage] = useState('')
   const [deliveryMessage, setDeliveryMessage] = useState('')
@@ -432,6 +432,7 @@ function ContactForm() {
         <span className="grid size-11 shrink-0 place-items-center rounded-full bg-[#1A1A1A] text-white"><ArrowIcon diagonal /></span>
       </div>
 
+      <p className="mb-4 text-sm" role="status">{draftNotice}</p>
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="grid gap-2 text-sm font-semibold" htmlFor="contact-name">
           <span>Name <span aria-hidden="true">*</span></span>
@@ -478,161 +479,12 @@ function ContactForm() {
   )
 }
 
-function WrenAssistant({ open, setOpen, onContact }) {
-  const [input, setInput] = useState('')
-  const [isThinking, setIsThinking] = useState(false)
-  const [assistantMode, setAssistantMode] = useState('Your Wren Labs guide')
-  const requestPending = useRef(false)
-  const [messages, setMessages] = useState([
-    {
-      id: 'welcome',
-      role: 'assistant',
-      text: 'Hi! I’m Wren. Ask me about websites, applications, RAG systems, AI automation, or how to start a project.',
-    },
-  ])
-  const messagesEndRef = useRef(null)
-
-  useEffect(() => {
-    if (open) messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
-  }, [open, messages, isThinking])
-
-  const sendMessage = async (question) => {
-    const cleanQuestion = question.trim()
-    if (!cleanQuestion || requestPending.current) return
-    requestPending.current = true
-    const history = messages.filter((item) => item.id !== 'welcome' && !item.fallback).slice(-6).map(({ role, text }) => ({ role, content: text }))
-
-    setMessages((current) => [...current, { id: `user-${Date.now()}`, role: 'user', text: cleanQuestion }])
-    setInput('')
-    setIsThinking(true)
-
-    try {
-      const result = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: cleanQuestion, history }),
-        signal: AbortSignal.timeout(25000),
-      })
-
-      if (!result.ok) throw new Error('AI request failed')
-
-      const data = await result.json()
-      if (!data.answer) throw new Error('AI response was empty')
-
-      setMessages((current) => [...current.slice(-39), { id: `wren-${Date.now()}`, role: 'assistant', text: data.answer }])
-      setAssistantMode('Your AI guide to Wren Labs')
-    } catch {
-      setMessages((current) => [...current.slice(-39), { id: `wren-${Date.now()}`, role: 'assistant', text: localAnswer(cleanQuestion, history), fallback: true }])
-      setAssistantMode('AI unavailable · Showing website information')
-    } finally {
-      setIsThinking(false)
-      requestPending.current = false
-    }
-  }
-
-  const submitMessage = (event) => {
-    event.preventDefault()
-    sendMessage(input)
-  }
-
-  const quickActions = [
-    { label: 'Plan my website', question: 'I want to build a website. Briefly explain marketing sites, online stores, and web platforms in plain sentences without a table, then ask one question to get started.' },
-    { label: 'Find an AI use case', question: 'Explain your multi-system support assistant sample concept and how a knowledge-based assistant could help answer customer questions. Keep proposed uses distinct from confirmed features, then ask which workflow I want to improve.' },
-    { label: 'Scope my application', question: 'I have an application idea. Help me plan a first version and ask about the main user problem.' },
-  ]
-
-  return (
-    <AnimatePresence mode="wait">
-      {open ? (
-        <motion.aside
-          key="assistant-panel"
-          role="dialog"
-          aria-label="Wren Assistant"
-          initial={{ opacity: 0, y: 24, scale: 0.97 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: 18, scale: 0.97 }}
-          transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-          className="fixed inset-x-3 bottom-3 z-[90] flex h-[calc(100dvh-1.5rem)] max-h-[620px] flex-col overflow-hidden rounded-3xl border border-[#EBEBEB] bg-white text-[#1A1A1A] shadow-[0_24px_80px_rgba(0,0,0,0.24)] sm:inset-x-auto sm:bottom-6 sm:right-6 sm:h-[600px] sm:w-[390px]"
-        >
-          <div className="flex items-center justify-between bg-[#1A1A1A] px-4 py-3.5 text-white">
-            <div className="flex min-w-0 items-center gap-3">
-              <img src={wrenMark} alt="" className="size-9 shrink-0 object-contain brightness-0 invert" />
-              <div className="min-w-0">
-                <p className="font-bold">Wren Assistant</p>
-                <p className="text-xs text-white/50">{assistantMode}</p>
-              </div>
-            </div>
-            <button type="button" onClick={() => setOpen(false)} className="grid size-11 shrink-0 place-items-center rounded-full text-2xl text-white/70 hover:bg-white/10 hover:text-white" aria-label="Close Wren Assistant">×</button>
-          </div>
-
-          <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4" aria-live="polite">
-            <div className="mb-4">
-              <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#1A1A1A]/45">Talk to Wren</p>
-              <h2 className="mt-1 text-2xl font-black tracking-[-0.04em]">Big ideas start here.</h2>
-            </div>
-
-            <div className="space-y-3">
-              {messages.map((message) => (
-                <div key={message.id} className={`max-w-[88%] whitespace-pre-wrap break-words rounded-2xl px-4 py-3 text-sm leading-relaxed ${message.role === 'user' ? 'ml-auto bg-[#1A1A1A] text-white' : 'bg-[#EBEBEB]/70'}`}>
-                  {message.text}
-                </div>
-              ))}
-              {isThinking && <div className="flex w-fit items-center gap-1 rounded-2xl bg-[#EBEBEB]/70 px-4 py-4" aria-label="Wren is thinking"><span className="assistant-dot" /><span className="assistant-dot" /><span className="assistant-dot" /></div>}
-              <div ref={messagesEndRef} />
-            </div>
-
-            <div className="mt-4 grid gap-2">
-              {quickActions.map((action) => (
-                <button key={action.label} type="button" disabled={isThinking} onClick={() => sendMessage(action.question)} className="flex min-h-11 items-center justify-between gap-3 rounded-full border border-[#EBEBEB] px-4 py-2 text-left text-sm font-semibold transition-colors hover:border-[#1A1A1A] disabled:cursor-wait disabled:opacity-50">
-                  {action.label} <ArrowIcon diagonal />
-                </button>
-              ))}
-              <button type="button" onClick={() => { setOpen(false); onContact() }} className="flex min-h-11 items-center justify-between rounded-full bg-[#1A1A1A] px-4 py-2 text-left text-sm font-semibold text-white">
-                Send a project inquiry <ArrowIcon diagonal />
-              </button>
-            </div>
-          </div>
-
-          <form onSubmit={submitMessage} className="flex gap-2 border-t border-[#EBEBEB] bg-white p-3">
-            <label htmlFor="wren-message" className="sr-only">Message Wren Assistant</label>
-            <input
-              id="wren-message"
-              maxLength={1000}
-              value={input}
-              onChange={(event) => setInput(event.target.value)}
-              placeholder="Ask Wren about your idea…"
-              className="min-w-0 flex-1 rounded-full border border-[#EBEBEB] px-4 py-3 text-base outline-none transition-colors focus:border-[#1A1A1A]"
-            />
-            <button type="submit" disabled={!input.trim() || isThinking} className="grid size-12 shrink-0 place-items-center rounded-full bg-[#1A1A1A] text-white disabled:cursor-not-allowed disabled:opacity-35" aria-label="Send message">
-              <ArrowIcon />
-            </button>
-          </form>
-          <p className="px-4 pb-3 text-center text-[11px] text-[#1A1A1A]/60">AI can make mistakes. Please keep sensitive details out of chat.</p>
-        </motion.aside>
-      ) : (
-        <motion.button
-          key="assistant-button"
-          type="button"
-          onClick={() => setOpen(true)}
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 12 }}
-          whileHover={{ y: -3 }}
-          whileTap={{ scale: 0.97 }}
-          className="fixed bottom-4 right-4 z-[90] flex size-14 items-center justify-center rounded-full border border-white/20 bg-[#1A1A1A] text-sm font-bold text-white shadow-[0_12px_40px_rgba(0,0,0,0.24)] min-[360px]:min-h-12 min-[360px]:w-auto min-[360px]:gap-3 min-[360px]:px-4 min-[360px]:py-3 sm:bottom-6 sm:right-6"
-          aria-label="Talk to Wren Assistant"
-        >
-          <img src={wrenMark} alt="" className="size-7 object-contain brightness-0 invert" />
-          <span className="hidden min-[360px]:inline">Talk to Wren</span>
-        </motion.button>
-      )}
-    </AnimatePresence>
-  )
-}
-
 function App() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [assistantOpen, setAssistantOpen] = useState(false)
+  const [form, setForm] = useState({ name: '', email: '', company: '', message: '', website: '' })
+  const [draftNotice, setDraftNotice] = useState('')
+  const [conceptQuestion, setConceptQuestion] = useState(null)
   const { scrollYProgress } = useScroll()
   const scaleX = useTransform(scrollYProgress, [0, 1], [0, 1])
 
@@ -643,7 +495,10 @@ function App() {
     return () => window.cancelAnimationFrame(frame)
   }, [])
 
-  const startProject = () => {
+  const startProject = (summary = '') => {
+    const merged = mergeInquiryDraft(form.message, summary)
+    setForm(current => ({ ...current, message: merged.message }))
+    setDraftNotice(merged.notice)
     document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' })
     window.setTimeout(() => document.querySelector('#contact-name')?.focus({ preventScroll: true }), 650)
   }
@@ -740,7 +595,7 @@ function App() {
 
             <div className="grid gap-4 lg:grid-cols-2">
               {concepts.map((concept, index) => (
-                <ConceptCard key={concept.id} concept={concept} index={index} onAsk={() => setAssistantOpen(true)} />
+                <ConceptCard key={concept.id} concept={concept} index={index} onAsk={() => { setConceptQuestion({ text: `Tell me about the ${concept.title} sample concept.` }); setAssistantOpen(true) }} />
               ))}
             </div>
           </div>
@@ -836,7 +691,7 @@ function App() {
                 </h2>
                 <p className="mt-6 max-w-xl text-lg leading-relaxed text-[#1A1A1A]/60 sm:text-xl">Tell us what you want to build, who it’s for, and when you’d like to launch. Email us directly or use the form, and we’ll reply to the address you share.</p>
               </div>
-              <ContactForm />
+              <ContactForm form={form} setForm={setForm} draftNotice={draftNotice} />
             </div>
           </Reveal>
         </section>
@@ -860,7 +715,7 @@ function App() {
         </div>
       </footer>
 
-      <WrenAssistant open={assistantOpen} setOpen={setAssistantOpen} onContact={startProject} />
+      <WrenAssistant conceptQuestion={conceptQuestion} open={assistantOpen} setOpen={setAssistantOpen} onContact={startProject} />
 
     </div>
   )

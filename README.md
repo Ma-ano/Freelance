@@ -1,58 +1,51 @@
 # Wren Labs
 
-Responsive company portfolio website for Wren Labs, built with React, Tailwind CSS, Motion, MongoDB, and Groq.
-
-## Stack
-
-- React 19 and Vite 8
-- Tailwind CSS 4
-- Motion
-- MongoDB Atlas
-- Groq using GPT-OSS 20B
+Responsive company portfolio website built with React, Vite, Tailwind CSS, Motion, MongoDB, Gmail, and Google Gemini.
 
 ## Development
 
 ```bash
-npm install
+npm ci
 npm run dev
 ```
 
-The Vite development server runs the same chat and contact handlers as Vercel and loads server credentials from `.env.local`. Restart `npm run dev` after changing credentials. Vercel deployments still require the variables in Vercel Project Settings.
+Copy `.env.example` to `.env.local` and configure server-only credentials. Never use `VITE_` for secrets. Restart the dev server after changing credentials. The Vite development server runs the same `/api/chat` and `/api/contact` handlers used by Vercel. `npm run preview` serves the static build only.
 
-## Environment variables
+- `GOOGLE_GEMINI_API_KEY`: Google Gemini API key.
+- `GEMINI_MODEL`: optional override; defaults to `gemini-3.5-flash-lite`.
+- `MONGODB_URI`: MongoDB connection string. Required for production rate limits and inquiry storage.
+- `MONGODB_DB`: defaults to `wrenlabs`.
+- `GMAIL_USER` and `GMAIL_APP_PASSWORD`: sender and Google App Password for inquiry notifications.
 
-Copy `.env.example` to `.env.local` and add these server-only values:
+## Wren Assistant
 
-- `MONGODB_URI` — MongoDB Atlas connection string
-- `MONGODB_DB` — database name (defaults to `wrenlabs`)
-- `GROQ_API_KEY` — Groq API key
-- `GROQ_MODEL` — optional model override (defaults to `openai/gpt-oss-20b`)
-- `GROQ_BASE_URL` — optional Groq OpenAI-compatible endpoint
+Wren is a warm bird-inspired company guide with occasional playful phrasing. Every Gemini request includes all approved facts from `server/knowledge.js`, the persona in `server/conversation.js`, and the last six messages (800 characters each). It must not invent prices, deadlines, clients, or team facts. Sample concepts remain distinct from shipped work.
 
-Never add real credentials to Git. Add the same variables in Vercel Project Settings for Production, Preview, and Development as needed.
+The voice stays curious, encouraging, and lightly bird-inspired across follow-ups. Replies should use zero or one emoji from 🐦, 🪶, ✨, 💡, 🌱, vary recent expressions, and respect requests for less playfulness. Serious concerns remain direct; inquiry drafts remain professional and emoji-free. Scripted greetings, loading, fallback, and limit messages use the same voice. These are model instructions, not a guarantee of identical style on every generation.
 
-## Server endpoints
+For an optional live voice evaluation, run `node server/persona-eval.js`. This uses the configured Gemini key for two ten-message conversations (20 paid/quota-counted requests), checks emoji limits and final handoffs, and writes a transcript to the OS temporary directory. It does not submit inquiries. Review the transcript for natural tone, repetition, and factual grounding; the automatic checks alone do not assess those qualities.
 
-- `POST /api/contact` validates contact-form submissions and stores them in the MongoDB `inquiries` collection.
-- `POST /api/chat` applies MongoDB-backed visitor and global rate limits, retrieves Wren Labs knowledge from MongoDB, and sends that context to Groq. If the API route is unavailable, the browser assistant uses bundled Wren Labs answers.
+Gemini uses structured JSON: `answer`, `offerInquiry`, and `inquirySummary`. The browser renders plain text, never generated HTML. A contextual Continue to inquiry action opens the existing form and adds an editable summary based only on visitor-stated requirements. Existing form content is preserved; if the combined message exceeds 3,000 characters, the existing message is retained with an explanation. Chat never submits the form or sends email. Selecting a sample concept prepares a question without spending an AI request.
 
-## Production
+The chat allows 10 attempts per page load, one pending request, and a four-second cooldown after each attempt. Failed attempts also count. Closing and reopening chat keeps the allowance; refreshing resets this UI allowance. Server counters do not reset on refresh: one request per four-second bucket, 10 per minute per visitor IP, 100 per UTC day per IP, and 900 per UTC day globally. Daily caps count admitted attempts, not just successful model replies. Shared-IP visitors share server quotas.
 
-### Gmail inquiry notifications
+Production requires MongoDB and fails closed when limits cannot be checked. Atomic capped counters use MongoDB's unique `_id` index and a TTL cleanup index. The Vercel trusted forwarding header identifies the visitor; other production hosting requires a trusted proxy configuration before exposing the API. Development uses socket IPs and falls back to process-local counters if MongoDB is missing or cannot connect. Local counters survive browser refreshes but reset when the server restarts or reloads the module. These local counters are not production storage.
 
-Set `GMAIL_USER` to the Gmail sender (normally `wrenlabsph@gmail.com`) and `GMAIL_APP_PASSWORD` to a Google App Password for that account. Use an App Password, not your normal Google password. Set these in `.env.local` and in Vercel's environment variables, then restart locally or redeploy. See https://support.google.com/accounts/answer/185833 for account eligibility and setup.
+Input is limited to 1,000 characters, request bodies to 16 KB, and model output to 1,000 tokens. No automatic provider retries. Rate-limit responses expose a retry countdown and contextual contact action. Provider failures show bundled website information. Conversation history lives only in browser memory, is sent to Gemini for replies, and clears on refresh.
 
-Notifications always go to `wrenlabsph@gmail.com`. The visitor email is the Reply-To address. Email and MongoDB storage are attempted independently: email can succeed during a database outage. The form reports partial success accurately; a database save does not imply an email was sent. SMTP acceptance does not guarantee inbox placement, so check spam too. No historical inquiries are emailed automatically.
+## Inquiries
 
-Wren uses a separate personality prompt in `server/conversation.js` and public company facts in `server/knowledge.js`. Only the last six chat messages (up to 800 characters each) are sent for follow-ups; history stays in browser memory and clears on reload. The UI retains up to 40 messages. Missing facts are not treated as confirmed business information, and sample concepts are explicitly distinguished from delivered client projects.
+`POST /api/contact` validates and independently attempts MongoDB storage and Gmail notification. Notifications go to `wrenlabsph@gmail.com` with the visitor email as Reply-To. Partial-success messages distinguish storage from notification. SMTP acceptance does not guarantee inbox placement. No historical inquiries are sent automatically.
 
-Public knowledge documents are synchronized to stable `wren:` IDs in MongoDB. Retrieval reads only those public records, never contact inquiries. The same public knowledge powers the non-AI fallback. Changing the approved knowledge file and deploying refreshes those records on the next AI request.
+## Checks and production
 
 ```bash
+npm test
+npm run lint
 npm run build
 ```
 
-The production output is generated in `dist` and is ready for Vercel.
+Deploy with Vercel's Vite preset and set server credentials in project settings. The frontend build is in `dist`; the `/api` functions must also be deployed. Never expose the frontend API key. Production chat intentionally remains unavailable if persistent rate-limit storage is unhealthy.
 
 ## Team portfolios on one domain
 
