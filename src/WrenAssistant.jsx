@@ -2,19 +2,21 @@ import { useEffect, useRef, useState } from 'react'
 import wrenMark from './assets/wren-mark.png'
 import { localAnswer } from '../server/knowledge.js'
 import { PAGE_LIMIT, COOLDOWN_MS, chatHistory } from './chat-utils.js'
+import { readChatSession, saveChatSession } from './chat-session.js'
 
 export default function WrenAssistant({ open, setOpen, onContact, conceptQuestion }) {
   const [input, setInput] = useState('')
   const [messages, setMessages] = useState([{ id: 'welcome', role: 'assistant', text: 'Chirp! I’m Wren, your little guide to Wren Labs. 🐦 Ask about our people, services, or an idea you’d like to give wings.' }])
   const [thinking, setThinking] = useState(false)
-  const [used, setUsed] = useState(0)
-  const [waitUntil, setWaitUntil] = useState(0)
+  const [session] = useState(readChatSession)
+  const [used, setUsed] = useState(session.used)
+  const [waitUntil, setWaitUntil] = useState(session.waitUntil)
   const [now, setNow] = useState(Date.now)
   const [mode, setMode] = useState('Your Gemini-powered studio guide')
   const [handoff, setHandoff] = useState(null)
   const pending = useRef(false)
-  const count = useRef(0)
-  const nextRequest = useRef(0)
+  const count = useRef(session.used)
+  const nextRequest = useRef(session.waitUntil)
   const inputRef = useRef(null)
   const panelRef = useRef(null)
   const launcherRef = useRef(null)
@@ -62,6 +64,9 @@ export default function WrenAssistant({ open, setOpen, onContact, conceptQuestio
     if (!question || pending.current || count.current >= PAGE_LIMIT || Date.now() < nextRequest.current) return
     pending.current = true
     count.current += 1
+    nextRequest.current = Date.now() + COOLDOWN_MS
+    // Save before the request so refreshing while it is pending still counts.
+    saveChatSession(count.current, nextRequest.current)
     setUsed(count.current)
     const history = chatHistory(messages)
     updateInput('')
@@ -97,6 +102,7 @@ export default function WrenAssistant({ open, setOpen, onContact, conceptQuestio
       pending.current = false
       setThinking(false)
       nextRequest.current = Date.now() + delay
+      saveChatSession(count.current, nextRequest.current)
       setWaitUntil(nextRequest.current)
       setNow(Date.now())
     }

@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import WrenAssistant from './WrenAssistant.jsx'
+import { readChatSession } from './chat-session.js'
 
 const reply = (body = {}) => ({ ok: true, status: 200, json: async () => ({ answer: 'We build websites.', offerInquiry: false, inquirySummary: '', ...body }) })
 const props = () => ({ open: true, setOpen: vi.fn(), onContact: vi.fn(), conceptQuestion: null })
@@ -10,6 +11,7 @@ async function send(text = 'Tell me about websites') {
 }
 async function cooldown() { await act(async () => vi.advanceTimersByTime(4500)) }
 beforeEach(() => {
+  sessionStorage.clear()
   vi.useFakeTimers()
   Element.prototype.scrollIntoView = vi.fn()
   vi.stubGlobal('fetch', vi.fn().mockResolvedValue(reply()))
@@ -40,13 +42,37 @@ describe('Wren chat interaction', () => {
     expect(screen.getByText('Continue to inquiry →')).toBeTruthy()
     view.unmount()
     render(<WrenAssistant {...p} />)
-    expect(screen.getByText(/10 of 10 messages/)).toBeTruthy()
+    expect(screen.getByText(/0 of 10 messages/)).toBeTruthy()
+    expect(screen.getByLabelText('Message Wren Assistant').disabled).toBe(true)
+  })
+  it('preserves remaining messages and cooldown after a page remount', async () => {
+    const view = render(<WrenAssistant {...props()} />)
+    await send()
+    view.unmount()
+    render(<WrenAssistant {...props()} />)
+    expect(screen.getByText(/9 of 10 messages/)).toBeTruthy()
+    expect(screen.getByText(/Wait 4s/)).toBeTruthy()
+    await send('too early after reload')
+    expect(fetch).toHaveBeenCalledTimes(1)
+    await cooldown()
+    await send('after cooldown')
+    expect(screen.getByText(/8 of 10 messages/)).toBeTruthy()
+  })
+  it('preserves server retry time across a page remount', async () => {
+    fetch.mockResolvedValue({ ok: false, status: 429, json: async () => ({ retryAfter: 60 }) })
+    const view = render(<WrenAssistant {...props()} />)
+    await send()
+    view.unmount()
+    render(<WrenAssistant {...props()} />)
+    expect(screen.getByText(/Wait 60s/)).toBeTruthy()
+    expect(screen.getByText(/9 of 10 messages/)).toBeTruthy()
   })
   it('blocks concurrent sends and cooldown submissions', async () => {
     let resolve
     fetch.mockImplementationOnce(() => new Promise(r => { resolve = r }))
     render(<WrenAssistant {...props()} />)
     await send()
+    expect(readChatSession().used).toBe(1)
     expect(screen.getByText(/thinking on my perch/)).toBeTruthy()
     await send('duplicate')
     expect(fetch).toHaveBeenCalledTimes(1)
