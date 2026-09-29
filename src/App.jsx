@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from 'motion/react'
 import wrenLabsLogo from './assets/wren-labs-logo.png'
-import wrenMark from './assets/wren-mark.png'
 import { teamMembers } from './data/team.js'
 import WrenAssistant from './WrenAssistant.jsx'
+import WrenBird from './WrenBird.jsx'
 import { mergeInquiryDraft } from './chat-utils.js'
 
 const COMPANY_NAME = 'Wren Labs'
@@ -510,13 +510,13 @@ function App() {
 
       <main>
         <section className="relative min-h-[620px] overflow-hidden bg-[#1A1A1A] px-5 pb-10 pt-32 text-white sm:min-h-[760px] sm:px-8 sm:pt-40 lg:px-12">
-          <img src={wrenMark} alt="" className="pointer-events-none absolute -right-20 top-24 w-[clamp(22rem,52vw,52rem)] select-none brightness-0 invert opacity-[0.06]" aria-hidden="true" />
           <div className="mx-auto flex min-h-[450px] max-w-[1440px] flex-col justify-between sm:min-h-[620px]">
             <div className="flex flex-col gap-6 border-l border-[#EBEBEB]/20 pl-4 sm:flex-row sm:items-center sm:justify-between sm:pl-6">
               <p className="max-w-[280px] text-sm leading-relaxed text-white/60">Wren Labs is an independent technology studio working across borders.</p>
             </div>
 
-            <div className="py-14 sm:py-20">
+            <div className="grid min-w-0 items-center gap-6 py-10 sm:py-12 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:gap-4">
+              <div className="min-w-0">
               <motion.p
                 initial={{ opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -525,7 +525,7 @@ function App() {
               >
                 Websites · Applications · AI
               </motion.p>
-              <h1 className="max-w-[1320px] overflow-hidden text-[clamp(1.5rem,9.4vw,9rem)] font-black leading-[0.82] tracking-[-0.075em]">
+              <h1 className="overflow-hidden text-[clamp(1.5rem,9.4vw,6rem)] font-black leading-[0.88] tracking-[-0.075em] lg:text-[clamp(2rem,5.6vw,5.8rem)]">
                 <motion.span initial={{ y: '100%' }} animate={{ y: 0 }} transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }} className="block">
                   SMALL TEAM.
                 </motion.span>
@@ -536,6 +536,8 @@ function App() {
                   BUILT TO LAST.
                 </motion.span>
               </h1>
+              </div>
+              <WrenBird />
             </div>
 
             <div className="flex flex-col gap-6 border-t border-[#EBEBEB]/20 pt-6 sm:flex-row sm:items-end sm:justify-between">

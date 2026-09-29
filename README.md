@@ -11,7 +11,7 @@ npm run dev
 
 Copy `.env.example` to `.env.local` and configure server-only credentials. Never use `VITE_` for secrets. Restart the dev server after changing credentials. The Vite development server runs the same `/api/chat` and `/api/contact` handlers used by Vercel. `npm run preview` serves the static build only.
 
-- `GOOGLE_GEMINI_API_KEY`: Google Gemini API key.
+- `GOOGLE_GEMINI_API_KEY`: Google Gemini API key. `GEMINI_API_KEY` and `GOOGLE_API_KEY` are also accepted, in that precedence order after the project-specific name. Set only one to avoid ambiguity.
 - `GEMINI_MODEL`: optional override; defaults to `gemini-3.5-flash-lite`.
 - `MONGODB_URI`: MongoDB connection string. Required for production rate limits and inquiry storage.
 - `MONGODB_DB`: defaults to `wrenlabs`.
@@ -32,6 +32,18 @@ The chat allows 10 attempts per page load, one pending request, and a four-secon
 Production requires MongoDB and fails closed when limits cannot be checked. Atomic capped counters use MongoDB's unique `_id` index and a TTL cleanup index. The Vercel trusted forwarding header identifies the visitor; other production hosting requires a trusted proxy configuration before exposing the API. Development uses socket IPs and falls back to process-local counters if MongoDB is missing or cannot connect. Local counters survive browser refreshes but reset when the server restarts or reloads the module. These local counters are not production storage.
 
 Input is limited to 1,000 characters, request bodies to 16 KB, and model output to 1,000 tokens. No automatic provider retries. Rate-limit responses expose a retry countdown and contextual contact action. Provider failures show bundled website information. Conversation history lives only in browser memory, is sent to Gemini for replies, and clears on refresh.
+
+### Connection troubleshooting
+
+Vercel environment variables are **not** automatically available to `npm run dev`. If the key is configured only on Vercel, local chat intentionally displays “Website guide · Offline mode” and uses bundled company facts. Add a server-only Gemini key to `.env.local` and restart Vite to test AI locally, or test the deployed site. Never paste a key into the browser or commit it.
+
+On Vercel, check that the key and `MONGODB_URI` apply to the deployment environment (Production or Preview), then redeploy after changing them. A missing key returns `AI_NOT_CONFIGURED`, database/rate-limit failures return `AI_STORAGE_UNAVAILABLE`, and other service failures return `AI_UNAVAILABLE`. Function logs identify whether failure occurred at rate-limit storage or Gemini, including the provider HTTP status when available, without logging secrets or visitor messages. Check MongoDB connectivity/permissions for storage failures; check the key, model access, and Google quota for Gemini failures. The chat only says “Connected to Gemini” after a successful reply.
+
+## Interactive Wren model
+
+The hero uses `src/assets/Bird-Wren-v2.glb` with a separately loaded Three.js viewer and a transparent background. There is no visible frame, label, or control bar. Drag with a mouse or swipe horizontally on touchscreens to rotate it. Vertical touch swipes still scroll the page. Arrow keys work on the focused viewer and Home restores the starting angle; instructions remain available to screen readers.
+
+Wren rotates slowly by default. After eight seconds without manual interaction, it eases back to its original angle over 1.2 seconds and resumes rotation. Automatic animation pauses offscreen or in a hidden tab, and is disabled for reduced-motion preferences. Rendering is capped at 30 fps and pixel density at 1.75; the bird stays framed at every angle and GPU resources are released on unmount. `src/assets/wren-bird-poster.png` is the static loading and WebGL-failure fallback. The original 2D logo remains in navigation and assistant controls.
 
 ## Inquiries
 
@@ -54,7 +66,7 @@ These profile routes are prepared for the portfolio migration:
 - Peter: `/PORTFOLIO/maanopetergil`
 - Raynato: `/PORTFOLIO/raynatopedrajeta`
 
-On the current production domain, prefix each path with `https://freelance-dusky-seven.vercel.app`. Links within the site are relative, so both profiles also work under a future custom domain without changing the paths. `vercel.json` rewrites portfolio requests to the React entry page, allowing direct visits and refreshes while leaving `/api/*` and assets untouched. See [Vercel rewrites](https://vercel.com/docs/routing/rewrites).
+On the current production domain, prefix each path with `https://wrenlabs-dusky-seven.vercel.app`. Links within the site are relative, so both profiles also work under a future custom domain without changing the paths. `vercel.json` rewrites portfolio requests to the React entry page, allowing direct visits and refreshes while leaving `/api/*` and assets untouched. See [Vercel rewrites](https://vercel.com/docs/routing/rewrites).
 
 For now, each profile clearly says its full portfolio is coming and links to the existing external portfolio. The old sites have not been transferred or proxied. Team names, roles, profile paths, and current portfolio links live in `src/data/team.js`, shared by the website and assistant knowledge. To complete the transfer later, bring in each portfolio's source and assets and replace its temporary content in `src/PortfolioPage.jsx`, preserving the public paths. Check asset paths and any API routes before retiring the old deployments.
 

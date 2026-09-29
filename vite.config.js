@@ -6,7 +6,7 @@ import { devApi } from './server/dev-api.js'
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
-  for (const key of ['MONGODB_URI', 'MONGODB_DB', 'GOOGLE_GEMINI_API_KEY', 'GEMINI_MODEL', 'GMAIL_USER', 'GMAIL_APP_PASSWORD']) {
+  for (const key of ['MONGODB_URI', 'MONGODB_DB', 'GOOGLE_GEMINI_API_KEY', 'GEMINI_API_KEY', 'GOOGLE_API_KEY', 'GEMINI_MODEL', 'GMAIL_USER', 'GMAIL_APP_PASSWORD']) {
     if (!process.env[key] && env[key]) process.env[key] = env[key]
   }
   return { plugins: [react(), tailwindcss(), devApi()] }

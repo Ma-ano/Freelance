@@ -10,7 +10,7 @@ export default function WrenAssistant({ open, setOpen, onContact, conceptQuestio
   const [used, setUsed] = useState(0)
   const [waitUntil, setWaitUntil] = useState(0)
   const [now, setNow] = useState(Date.now)
-  const [mode, setMode] = useState('Your Wren Labs guide')
+  const [mode, setMode] = useState('Your Gemini-powered studio guide')
   const [handoff, setHandoff] = useState(null)
   const pending = useRef(false)
   const count = useRef(0)
@@ -79,15 +79,18 @@ export default function WrenAssistant({ open, setOpen, onContact, conceptQuestio
         delay = Math.max(COOLDOWN_MS, Math.min(86400, Number(data.retryAfter) || 60) * 1000)
         throw new Error('RATE_LIMITED')
       }
-      if (!response.ok || typeof data.answer !== 'string' || !data.answer.trim()) throw new Error('UNAVAILABLE')
+      if (!response.ok || typeof data.answer !== 'string' || !data.answer.trim()) throw new Error(data.code === 'AI_NOT_CONFIGURED' ? 'AI_NOT_CONFIGURED' : 'UNAVAILABLE')
       setMessages(current => [...current, { id: crypto.randomUUID(), role: 'assistant', text: data.answer }].slice(-40))
-      setMode('Your AI guide to Wren Labs')
+      setMode('Connected to Gemini')
       if (data.offerInquiry === true) setHandoff({ summary: typeof data.inquirySummary === 'string' ? data.inquirySummary : '' })
     } catch (error) {
       const limited = error.message === 'RATE_LIMITED'
-      const answer = limited ? 'I’ve reached my chat allowance for now. You can wait for the timer or continue to the inquiry form to reach our team. I’ll be here on my perch when chat is available again.' : `I’m still here to help, though I can’t reach my AI service right now. Here’s what our team’s website says:\n\n${localAnswer(question, history)}`
+      const connectionNote = error.message === 'AI_NOT_CONFIGURED'
+        ? 'Gemini isn’t configured for this version of the site yet.'
+        : 'I can’t reach Gemini right now.'
+      const answer = limited ? 'I’ve reached my chat allowance for now. You can wait for the timer or continue to the inquiry form to reach our team. I’ll be here on my perch when chat is available again.' : `I’m still here to help. ${connectionNote} Here’s information from our website, not an AI-generated reply:\n\n${localAnswer(question, history)}`
       setMessages(current => [...current, { id: crypto.randomUUID(), role: 'assistant', text: answer, fallback: true }].slice(-40))
-      setMode(limited ? 'Chat limit reached' : 'Website information · AI unavailable')
+      setMode(limited ? 'Chat limit reached' : 'Website guide · Offline mode')
       setHandoff({ summary: '' })
     } finally {
       clearTimeout(timeout)

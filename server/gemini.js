@@ -1,5 +1,6 @@
 import { WREN_INSTRUCTIONS } from './conversation.js'
 import { KNOWLEDGE_DOCUMENTS } from './knowledge.js'
+import { getGeminiConfig } from './gemini-config.js'
 
 export function geminiRequest(message, history) {
   return {
@@ -29,9 +30,9 @@ export function parseGeminiResult(result) {
 }
 
 export async function generateReply(message, history, fetcher = fetch) {
-  const model = process.env.GEMINI_MODEL || 'gemini-3.5-flash-lite'
+  const { apiKey, model } = getGeminiConfig()
   const response = await fetcher(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
-    method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': process.env.GOOGLE_GEMINI_API_KEY },
+    method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
     body: JSON.stringify(geminiRequest(message, history)), signal: AbortSignal.timeout(20000),
   })
   if (!response.ok) {
