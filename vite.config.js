@@ -2,6 +2,7 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig, loadEnv } from 'vite'
 import { devApi } from './server/dev-api.js'
+import { portfolioPages } from './server/portfolio-pages.js'
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
@@ -9,5 +10,12 @@ export default defineConfig(({ mode }) => {
   for (const key of ['MONGODB_URI', 'MONGODB_DB', 'GOOGLE_GEMINI_API_KEY', 'GEMINI_API_KEY', 'GOOGLE_API_KEY', 'GEMINI_MODEL', 'GMAIL_USER', 'GMAIL_APP_PASSWORD']) {
     if (!process.env[key] && env[key]) process.env[key] = env[key]
   }
-  return { plugins: [react(), tailwindcss(), devApi()] }
+  return {
+    plugins: [react(), tailwindcss(), devApi(), portfolioPages()],
+    build: {
+      rolldownOptions: {
+        input: ['index.html', 'PORTFOLIO/maanopetergil/index.html'],
+      },
+    },
+  }
 })

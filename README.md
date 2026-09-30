@@ -61,14 +61,16 @@ Deploy with Vercel's Vite preset and set server credentials in project settings.
 
 ## Team portfolios on one domain
 
-These profile routes are prepared for the portfolio migration:
+Team portfolios share the Wren Labs domain:
 
 - Peter: `/PORTFOLIO/maanopetergil`
 - Raynato: `/PORTFOLIO/raynatopedrajeta`
 
 On the current production domain, prefix each path with `https://wrenlabs-dusky-seven.vercel.app`. Links within the site are relative, so both profiles also work under a future custom domain without changing the paths. `vercel.json` rewrites portfolio requests to the React entry page, allowing direct visits and refreshes while leaving `/api/*` and assets untouched. See [Vercel rewrites](https://vercel.com/docs/routing/rewrites).
 
-For now, each profile clearly says its full portfolio is coming and links to the existing external portfolio. The old sites have not been transferred or proxied. Team names, roles, profile paths, and current portfolio links live in `src/data/team.js`, shared by the website and assistant knowledge. To complete the transfer later, bring in each portfolio's source and assets and replace its temporary content in `src/PortfolioPage.jsx`, preserving the public paths. Check asset paths and any API routes before retiring the old deployments.
+Peter's full portfolio is migrated from `Ma-ano_Portfolio-main` into `src/portfolios/peter`. Its separate HTML entry at `PORTFOLIO/maanopetergil/index.html` keeps the original dark theme isolated from the company page. Vite builds both entries, and specific Vercel rewrites serve Peter's page before the generic portfolio fallback. The local development/preview middleware supports the same URL with or without a trailing slash. `npm run build` type-checks the portfolio before building. Personal email, Viber, social links, and project content are preserved; the Wren Labs navigation link returns to the team section. No additional environment variables are needed.
+
+Raynato's route remains a prepared profile linked to his external portfolio. Team names, roles, and profile paths live in `src/data/team.js`. The original portfolio folder and external deployments have not been deleted or modified.
 
 ## Assistant knowledge
 

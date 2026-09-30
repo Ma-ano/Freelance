@@ -67,7 +67,8 @@ test('the fallback explains the name, project steps, and contact address', () =>
   assert.match(localAnswer('Why the name Wren Labs?'), /symbolism/)
   assert.match(localAnswer('What is the project agenda?'), /Test and launch/)
   assert.match(localAnswer('How can I contact you?'), /wrenlabsph@gmail\.com/)
-  assert.match(localAnswer('Where is Peter portfolio?'), /migration is planned/)
+  assert.match(localAnswer('Where is Peter portfolio?'), /Peter's portfolio migration is complete/)
+  assert.match(localAnswer('Where is Peter portfolio?'), /Raynato's full portfolio migration is still planned/)
 })
 
 test('prepared portfolio URLs resolve directly and tolerate trailing slashes', () => {

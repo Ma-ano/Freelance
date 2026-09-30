@@ -1,6 +1,11 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
+    { "source": "/PORTFOLIO/maanopetergil", "destination": "/PORTFOLIO/maanopetergil/index.html" },
+    { "source": "/PORTFOLIO/maanopetergil/", "destination": "/PORTFOLIO/maanopetergil/index.html" },
+    { "source": "/portfolio/maanopetergil", "destination": "/PORTFOLIO/maanopetergil/index.html" },
+    { "source": "/portfolio/maanopetergil/", "destination": "/PORTFOLIO/maanopetergil/index.html" },
+    { "source": "/portfolio/maanopetergil/index.html", "destination": "/PORTFOLIO/maanopetergil/index.html" },
     { "source": "/PORTFOLIO/:path*", "destination": "/index.html" },
     { "source": "/portfolio/:path*", "destination": "/index.html" }
   ]
