@@ -21,6 +21,7 @@ describe('migrated Peter portfolio', () => {
     expect(photo.getAttribute('src')).toContain('peter-portrait.png')
     expect(photo.getAttribute('width')).toBe('1254')
     expect(photo.getAttribute('height')).toBe('1254')
+    expect(screen.queryByText('Available for freelance work')).toBeNull()
   })
   it('keeps the brand link on this page and provides a Wren Labs return link', () => {
     render(<Navigation />)
