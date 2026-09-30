@@ -1,5 +1,6 @@
 import { motion } from 'motion/react'
 import { profile } from '../../data/profile'
+import portrait from '../../assets/peter-portrait.png'
 
 export default function Hero() {
   return (
@@ -10,6 +11,17 @@ export default function Hero() {
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
+          <motion.img
+            src={portrait}
+            alt="Portrait of Peter Gil T. Ma-año"
+            width={1254}
+            height={1254}
+            fetchPriority="high"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: 'easeOut' }}
+            className="mx-auto mb-6 h-36 w-36 rounded-2xl border border-border-strong object-cover shadow-xl sm:h-44 sm:w-44"
+          />
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}

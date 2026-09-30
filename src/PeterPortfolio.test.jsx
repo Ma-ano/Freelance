@@ -3,6 +3,7 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import Navigation from './portfolios/peter/components/navigation/navigation'
 import Projects from './portfolios/peter/components/projects/case-studies'
 import Contact from './portfolios/peter/components/contact/contact'
+import Hero from './portfolios/peter/components/heroes/hero'
 
 beforeEach(() => {
   vi.stubGlobal('IntersectionObserver', class {
@@ -14,6 +15,13 @@ beforeEach(() => {
 afterEach(() => { cleanup(); vi.unstubAllGlobals() })
 
 describe('migrated Peter portfolio', () => {
+  it('shows Peter’s portrait with accessible text and reserved dimensions', () => {
+    render(<Hero />)
+    const photo = screen.getByRole('img', { name: 'Portrait of Peter Gil T. Ma-año' })
+    expect(photo.getAttribute('src')).toContain('peter-portrait.png')
+    expect(photo.getAttribute('width')).toBe('1254')
+    expect(photo.getAttribute('height')).toBe('1254')
+  })
   it('keeps the brand link on this page and provides a Wren Labs return link', () => {
     render(<Navigation />)
     expect(screen.getByRole('link', { name: /Peter.*Home/ }).getAttribute('href')).toBe('#home')
