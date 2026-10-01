@@ -114,7 +114,7 @@ export function createBirdScene(host, { onReady, onError }) {
     const halfVerticalFov = MathUtils.degToRad(camera.fov / 2)
     const halfHorizontalFov = Math.atan(Math.tan(halfVerticalFov) * camera.aspect)
     // Fit a sphere around actual vertices, keeping the tail and feet in frame.
-    orbit.radius = radius / Math.sin(Math.min(halfVerticalFov, halfHorizontalFov)) * 1.1
+    orbit.radius = radius / Math.sin(Math.min(halfVerticalFov, halfHorizontalFov)) * 1.03
     camera.updateProjectionMatrix()
     renderer.setSize(width, height, false)
     render()
