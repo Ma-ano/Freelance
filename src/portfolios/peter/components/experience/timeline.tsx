@@ -2,19 +2,19 @@ import { motion } from 'motion/react'
 
 const responsibilities = [
   {
-    title: 'End-to-end delivery',
+    title: 'From the first question to deployment',
     description:
       'Develop web and mobile applications from requirements gathering and planning through implementation, testing, and deployment.',
   },
   {
-    title: 'Direct client collaboration',
+    title: 'Working directly with clients',
     description:
       'Work directly with clients to understand requirements, troubleshoot issues, explain technical decisions, and iterate based on feedback.',
   },
   {
-    title: 'Sound engineering practices',
+    title: 'Connecting the whole system',
     description:
-      'Build with Next.js, React, Firebase, and Laravel MVC with Blade, covering database design, server-side authentication, payment and email integration, PDF and spreadsheet handling, and responsive interfaces.',
+      'Connect frontend interfaces with backend logic, data, authentication, and external services. Projects span commerce, school operations, video recording, and AI automation.',
   },
 ]
 
@@ -28,9 +28,9 @@ export default function Experience() {
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.6, ease: 'easeOut' }}
         >
-          <span className="text-sm font-medium tracking-widest uppercase text-text-subtle">Experience</span>
+          <span className="eyebrow">Experience</span>
           <h2 id="experience-title" className="section-title mt-3">
-            Where I've worked
+            Taking ownership of the build.
           </h2>
         </motion.div>
 
@@ -42,12 +42,12 @@ export default function Experience() {
             transition={{ duration: 0.6, ease: 'easeOut', delay: 0.1 }}
             className="lg:col-span-4"
           >
-            <h3 className="text-xl font-medium text-text">Freelance Full-Stack Developer</h3>
+            <h3 className="text-xl font-medium text-text">Freelance Software Engineer & Full-Stack Developer</h3>
             <p className="mt-2 text-base text-text-muted">Philippines</p>
             <p className="mt-1 text-sm text-text-subtle">2025 – Present</p>
             <p className="mt-6 text-base leading-relaxed text-text-muted">
-              Sole developer on production systems for real clients — owning everything from the
-              first requirements conversation to deployment.
+              Building client systems from requirements and database design to implementation,
+              testing, and deployment, with direct communication throughout the project.
             </p>
           </motion.div>
 

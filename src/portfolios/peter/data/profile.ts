@@ -1,6 +1,6 @@
 export const profile = {
   name: 'Peter Gil T. Ma-año',
-  roles: ['Full-Stack Developer', 'Software Developer', 'Web & Mobile Developer'],
+  roles: ['Software Engineer', 'Full-Stack Developer', 'AI Automation Developer', 'Software Developer', 'Web & Mobile Developer'],
   location: 'Las Piñas City, Philippines',
   phone: '0961 317 6898',
   email: 'manopetergil@gmail.com',
@@ -20,6 +20,7 @@ export interface Project {
   technicalAreas: string[]
   integrations?: string[]
   liveUrl?: string
+  websiteStatus?: 'paused'
   technologies: string[]
 }
 
@@ -28,7 +29,7 @@ export const projects: Project[] = [
     name: 'Pinay Victorious Beauty Australia',
     type: 'E-Commerce Platform — Production Client Project',
     overview:
-      'A production full-stack e-commerce website and administrator dashboard for an Australian beauty business, built with Next.js, React, TypeScript, Tailwind CSS, and Firebase, with PayPal and Afterpay payments.',
+      'An online beauty store for an Australian business, connecting product browsing, customer accounts, payments, and order management in one storefront and admin dashboard.',
     role: 'Full-Stack Developer — requirements gathering through deployment',
     built: [
       'Complete storefront with product catalog, categories, search, product details, variants, and stock availability',
@@ -70,7 +71,7 @@ export const projects: Project[] = [
     name: 'Everbright International Academy Inc.',
     type: 'School Management System — Production Client Project',
     overview:
-      'A school management system hosted on Hostinger, built with Laravel 11, PHP 8.2+, and MySQL. Server-rendered Blade pages support teachers, students, batches, subjects, grades, academic records, and day-to-day academic and financial operations.',
+      'A school management system that brings teachers, students, classes, grades, and academic records together, with tools for day-to-day administrative and financial work.',
     role: 'Full-Stack Developer — database design through delivery',
     built: [
       'Multi-role authentication with role-based access control across administrative workflows',
@@ -127,6 +128,47 @@ export const projects: Project[] = [
     technicalAreas: ['Component architecture', 'Responsive layouts', 'Motion design'],
     technologies: ['React', 'TypeScript', 'Tailwind CSS', 'Motion.dev', 'Vite'],
   },
+  {
+    name: 'DinkVision Match Recording Platform',
+    type: 'Sports Video Recording Platform',
+    overview:
+      'A pickleball recording platform that connects venue cameras and guest tablets to cloud video uploads and replay emails, with tools to manage devices and recover interrupted recordings.',
+    role: 'Software Engineer & Full-Stack Developer — web, recorder, and mobile workflows',
+    built: [
+      'Next.js control app with administrator tools for courts, devices, cameras, recordings, tenants, and retention settings',
+      'Browser-based tablet recording with local recovery, per-court upload queues, and direct Google Drive uploads',
+      'Native Android recorder and Windows recorder workflows for device, USB, ONVIF, and RTSP cameras',
+    ],
+    features: [
+      'Guest tablet recording',
+      'Admin dashboard',
+      'Court and device management',
+      'Browser camera and microphone capture',
+      'Android recording support',
+      'USB, ONVIF, and RTSP camera workflows',
+      'Local recording recovery',
+      'Google Drive video upload',
+      'Gmail replay delivery',
+      'Retention and cleanup jobs',
+      'Tenant-scoped access control',
+      'Recording diagnostics and audit history',
+    ],
+    technicalAreas: [
+      'Next.js 16 App Router, React 19, and TypeScript',
+      'Supabase SSR authentication, PostgreSQL, RLS, and migrations',
+      'Google OAuth with Drive and Gmail API integrations',
+      'Browser MediaRecorder capture with IndexedDB recovery storage',
+      'Native Android Java with Camera2 and USB/UVC camera support',
+      'Windows recorder with Node.js, FFmpeg, ONVIF, RTSP, and DirectShow',
+      'Resumable uploads, bounded retries, queue leases, and idempotent capture actions',
+      'Vercel deployment with authenticated cron jobs and automated integration tests',
+      'Hosted on Vercel; public website currently paused',
+    ],
+    integrations: ['Supabase', 'Google Drive API', 'Gmail API', 'FFmpeg', 'ONVIF / RTSP cameras'],
+    liveUrl: 'https://dinkvision.vercel.app/',
+    websiteStatus: 'paused',
+    technologies: ['Next.js 16', 'React 19', 'TypeScript', 'Supabase', 'Android Java', 'FFmpeg'],
+  },
 ]
 
 export interface SkillCategory {
@@ -141,23 +183,27 @@ export const skillCategories: SkillCategory[] = [
   },
   {
     label: 'Backend',
-    skills: ['Next.js App Router & Route Handlers', 'Firebase Admin', 'Firebase Authentication', 'Laravel 11', 'PHP 8.2+', 'MVC Architecture', 'Python', 'REST APIs', 'Authentication', 'Authorization', 'RBAC'],
+    skills: ['Next.js App Router & Route Handlers', 'Node.js', 'Supabase Auth', 'Firebase Admin', 'Firebase Authentication', 'Laravel 11', 'PHP 8.2+', 'MVC Architecture', 'Python', 'REST APIs', 'Authentication', 'Authorization', 'RBAC'],
   },
   {
     label: 'Data',
-    skills: ['Firebase Firestore', 'Firebase Storage', 'Firebase Security Rules', 'MySQL', 'MongoDB', 'Database Design', 'Database Optimization'],
+    skills: ['Supabase', 'PostgreSQL', 'Row-Level Security (RLS)', 'IndexedDB', 'Firebase Firestore', 'Firebase Storage', 'Firebase Security Rules', 'MySQL', 'MongoDB', 'Database Design', 'Database Optimization'],
   },
   {
     label: 'Mobile',
-    skills: ['Flutter', 'Ionic'],
+    skills: ['Android Java', 'Camera2', 'USB / UVC Cameras', 'Flutter', 'Ionic'],
   },
   {
     label: 'Integrations',
-    skills: ['PayPal', 'Afterpay', 'Nodemailer / SMTP', 'Axios', 'Laravel Dompdf', 'PhpSpreadsheet', 'Next.js Image', 'Sharp', 'Vercel Speed Insights', 'REST APIs', 'Third-Party Services'],
+    skills: ['Google Drive API', 'Gmail API', 'Google OAuth', 'FFmpeg', 'ONVIF / RTSP', 'PayPal', 'Afterpay', 'Nodemailer / SMTP', 'Axios', 'Laravel Dompdf', 'PhpSpreadsheet', 'Next.js Image', 'Sharp', 'Vercel Speed Insights', 'REST APIs', 'Third-Party Services'],
   },
   {
     label: 'Tools',
     skills: ['Git', 'GitHub', 'VS Code', 'npm', 'Vite', 'PHPUnit 10.5', 'Hostinger', 'Apache .htaccess', 'Vercel', 'Firebase', 'AI-Assisted Development Tools'],
+  },
+  {
+    label: 'AI & Automation',
+    skills: ['AI Automation', 'Workflow Automation', 'Automation Architecture', 'API Integrations', 'AI-Assisted Development Tools'],
   },
 ]
 
@@ -171,12 +217,8 @@ export const coreStrengths = [
   'Independent Work',
   'Project Planning',
   'Technical Communication',
+  'AI Automation',
+  'Software Engineering',
   'Adaptability',
 ] as const
-
-export const education = {
-  degree: 'Bachelor of Science in Information Technology',
-  school: 'Cavite State University – Imus Campus',
-  graduated: 'September 29, 2025',
-} as const
 

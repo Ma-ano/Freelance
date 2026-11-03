@@ -12,14 +12,13 @@ export default function Contact() {
           transition={{ duration: 0.6, ease: 'easeOut' }}
           className="max-w-3xl"
         >
-          <span className="text-sm font-medium tracking-widest uppercase text-text-subtle">Contact</span>
+          <span className="eyebrow">Let’s work together</span>
           <h2 id="contact-title" className="section-title mt-3 text-balance">
-            Have a project in mind? Let's build it.
+            Tell me what you’re working on.
           </h2>
           <p className="section-subtitle">
-            I'm available for freelance and software development work. Whether you need a full
-            application built from the ground up or an existing system improved, I'd like to
-            hear about it.
+            Need an application built, a workflow automated, or a system improved?
+            Tell me what you need and where you’re stuck. We can work out the next step together.
           </p>
         </motion.div>
 
@@ -75,7 +74,7 @@ export default function Contact() {
                   className="text-base text-text hover:text-accent-muted transition-colors duration-200"
                   aria-label="LinkedIn profile (opens in a new tab)"
                 >
-                  linkedin.com/in/peter-gil-maaño
+                  Connect on LinkedIn
                 </a>
               </li>
             </ul>

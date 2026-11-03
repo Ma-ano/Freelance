@@ -11,16 +11,18 @@ export default function Skills() {
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.6, ease: 'easeOut' }}
         >
-          <span className="text-sm font-medium tracking-widest uppercase text-text-subtle">Skills</span>
+          <span className="eyebrow">Technical skills</span>
           <h2 id="skills-title" className="section-title mt-3">
-            Tools of the trade.
+            The tools behind the work.
           </h2>
+          <p className="section-subtitle">Web, mobile, backend systems, and AI automation. I choose the tools around what the project needs.</p>
         </motion.div>
 
-        <dl className="mt-12 grid gap-x-12 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+        <dl className="mt-12 grid gap-5 sm:grid-cols-2">
           {skillCategories.map((category, index) => (
             <motion.div
               key={category.label}
+              className="rounded-lg border border-border bg-bg-elevated p-6 sm:p-8"
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-60px' }}
@@ -34,7 +36,7 @@ export default function Skills() {
                   {category.skills.map((skill) => (
                     <li
                       key={skill}
-                      className="px-3 py-1.5 text-sm rounded-md border border-border text-text-muted transition-colors duration-200 hover:border-border-strong hover:text-text"
+                      className="px-3 py-1.5 text-sm rounded-md border border-border text-text-muted"
                     >
                       {skill}
                     </li>

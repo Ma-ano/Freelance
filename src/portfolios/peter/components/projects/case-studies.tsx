@@ -24,19 +24,23 @@ function CaseStudy({ project, index }: { project: Project; index: number }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-80px' }}
       transition={{ duration: 0.6, ease: 'easeOut', delay: index * 0.08 }}
-      className={`card ${index === 0 ? 'lg:p-10' : ''}`}
+      className="card flex min-w-0 flex-col"
       aria-labelledby={`project-${index}-title`}
     >
-      <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+      <div className="mb-5 flex flex-wrap items-center justify-between gap-3 text-xs">
+        <span className="font-mono text-accent" aria-hidden="true">{String(index + 1).padStart(2, '0')} / PROJECT</span>
+        {project.websiteStatus === 'paused' && <span className="rounded-full border border-border-strong px-3 py-1 text-text-muted">Website currently paused</span>}
+      </div>
+      <div>
+        <p className="mb-3 text-xs text-text-subtle">{project.type}</p>
         <h3 id={`project-${index}-title`} className="text-xl sm:text-2xl font-medium text-text">
           {project.name}
         </h3>
-        <p className="text-sm text-text-subtle">{project.type}</p>
       </div>
 
       <p className="mt-5 text-base leading-relaxed text-text-muted">{project.overview}</p>
 
-      <dl className="mt-8 grid gap-8 sm:grid-cols-2">
+      <dl className="mt-6 grid gap-6">
         <div>
           <dt className="text-sm font-medium tracking-widest uppercase text-text-subtle">My role</dt>
           <dd className="mt-3 text-base leading-relaxed text-text-muted">{project.role}</dd>
@@ -66,7 +70,7 @@ function CaseStudy({ project, index }: { project: Project; index: number }) {
             transition={{ duration: 0.35, ease: 'easeInOut' }}
             className="overflow-hidden"
           >
-            <div className="pt-8 mt-8 border-t border-border grid gap-8 sm:grid-cols-2">
+            <div className="pt-8 mt-8 border-t border-border grid gap-8">
               <div>
                 <h4 className="text-sm font-medium tracking-widest uppercase text-text-subtle">
                   Key functionality
@@ -123,16 +127,16 @@ function CaseStudy({ project, index }: { project: Project; index: number }) {
             <li key={tech}>{tech}</li>
           ))}
         </ul>
-        <div className="flex items-center gap-3">
+        <div className="flex w-full flex-wrap items-center justify-between gap-3">
           {project.liveUrl && (
             <a
               href={project.liveUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-sm font-medium text-text hover:text-accent-muted transition-colors duration-200"
-              aria-label={`Visit live site: ${project.name} (opens in a new tab)`}
+              className="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-accent hover:text-accent-muted transition-colors duration-200"
+              aria-label={`Visit ${project.websiteStatus === 'paused' ? 'paused website' : 'live site'}: ${project.name} (opens in a new tab)`}
             >
-              View live site
+              {project.websiteStatus === 'paused' ? 'Website (paused)' : 'Visit website'}
               <ExternalLinkIcon />
             </a>
           )}
@@ -140,8 +144,9 @@ function CaseStudy({ project, index }: { project: Project; index: number }) {
             type="button"
             onClick={() => setExpanded(!expanded)}
             aria-expanded={expanded}
-            aria-controls={`project-${index}-details`}
-            className="inline-flex items-center gap-2 text-sm font-medium text-text-muted hover:text-text transition-colors duration-200"
+            aria-controls={expanded ? `project-${index}-details` : undefined}
+            className="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-text-muted hover:text-text transition-colors duration-200"
+            aria-label={`${expanded ? 'Less detail' : 'More detail'} about ${project.name}`}
           >
             {expanded ? 'Less detail' : 'More detail'}
             <motion.svg
@@ -172,18 +177,18 @@ export default function Projects() {
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.6, ease: 'easeOut' }}
         >
-          <span className="text-sm font-medium tracking-widest uppercase text-text-subtle">Work</span>
+          <span className="eyebrow">Selected work</span>
           <h2 id="projects-title" className="section-title mt-3">
-            Selected projects.
+            Different problems. Working solutions.
           </h2>
           <p className="section-subtitle">
-            Production systems built for real businesses — plus one personal exploration of
-            frontend craft.
+            A closer look at the storefronts, systems, and recording tools I’ve worked on,
+            alongside a personal exploration of frontend design.
           </p>
         </motion.div>
 
-        <div className="mt-12 space-y-6 lg:space-y-8">
-          {projects.map((project, index) => (
+        <div className="mt-12 grid items-start gap-6 lg:grid-cols-2">
+          {[...projects.filter((project) => project.liveUrl), ...projects.filter((project) => !project.liveUrl)].map((project, index) => (
             <CaseStudy key={project.name} project={project} index={index} />
           ))}
         </div>

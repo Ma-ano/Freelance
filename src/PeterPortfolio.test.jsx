@@ -21,8 +21,7 @@ describe('migrated Peter portfolio', () => {
     expect(photo.getAttribute('src')).toContain('peter-portrait.png')
     expect(photo.getAttribute('width')).toBe('1254')
     expect(photo.getAttribute('height')).toBe('1254')
-    expect(screen.queryByText('Available for freelance work')).toBeNull()
-    expect(screen.getByRole('heading', { level: 1 }).textContent).toContain('Thoughtfully built.')
+    expect(screen.getByRole('heading', { level: 1 }).textContent).toContain('I build software.')
     expect(screen.getByRole('link', { name: /Explore my work/ }).getAttribute('href')).toBe('#projects')
     expect(screen.getByRole('link', { name: /Let’s talk/ }).getAttribute('href')).toBe('#contact')
   })
@@ -44,12 +43,13 @@ describe('migrated Peter portfolio', () => {
 
   it('preserves projects and expandable case studies', () => {
     render(<Projects />)
-    expect(screen.getAllByRole('article')).toHaveLength(3)
+    expect(screen.getAllByRole('article')).toHaveLength(4)
     const button = screen.getAllByRole('button', { name: /More detail/ })[0]
     fireEvent.click(button)
     expect(button.getAttribute('aria-expanded')).toBe('true')
     fireEvent.click(button)
     expect(button.getAttribute('aria-expanded')).toBe('false')
     expect(screen.getAllByRole('link', { name: /Visit live site/ })).toHaveLength(2)
+    expect(screen.getByRole('link', { name: /Visit paused website: DinkVision/ }).getAttribute('href')).toBe('https://dinkvision.vercel.app/')
   })
 })
